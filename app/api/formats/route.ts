@@ -4,7 +4,7 @@ import { prisma } from '@/lib/db/prisma'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, structure, visualDescription, isGlobal, projectId, examples, sections } = body
+    const { name, structure, visualDescription, isGlobal, projectId, examples, sections, referenceVideos, footageLinks, notes } = body
 
     const format = await prisma.scriptFormat.create({
       data: {
@@ -15,6 +15,9 @@ export async function POST(request: NextRequest) {
         projectId: isGlobal ? null : projectId,
         examples: examples || '[]',
         sections: sections || '["hook","body"]',
+        referenceVideos: referenceVideos || '[]',
+        footageLinks: footageLinks || '[]',
+        notes: notes || null,
       },
     })
 

@@ -1,2 +1,43 @@
-[00:00:00.482] Server  LOG     ✓ Ready in 357ms
-[00:00:01.445] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:00.531] Server  LOG     ✓ Ready in 376ms
+[00:00:01.582] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:06:44.427] Server  LOG     ✓ Compiled in 415ms
+[00:06:52.967] Server  LOG     ✓ Compiled in 27ms
+[00:07:02.146] Browser ERROR   In HTML, %s cannot be a child of <%s>.%s
+This will cause a hydration error.%s <html> main  
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:"...", ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/briefs/10..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html lang="en">
+                          <body className="inter_5972...">
+                            <div className="min-h-scre...">
+                              <HeaderNav>
+>                             <main className="flex-1">
+                                ...
+                                  <SegmentViewNode type="layout" pagePath="briefs/[id...">
+                                    <SegmentTrieNode>
+                                    <BriefLayout>
+>                                     <html lang="en">
+                  ...
+
+[00:07:02.146] Browser ERROR   <%s> cannot contain a nested %s.
+See this log for the ancestor stack trace. main <html>
+[00:07:02.146] Browser ERROR   You are mounting a new %s component when a previous one has not first unmounted. It is an error to render more than one %s component at a time and attributes and children of these components will likely fail in unpredictable ways. Please only render a single instance of <%s> and if you need to mount a new one, ensure any previous ones have unmounted first. html html html
+[00:07:02.146] Browser ERROR   You are mounting a new %s component when a previous one has not first unmounted. It is an error to render more than one %s component at a time and attributes and children of these components will likely fail in unpredictable ways. Please only render a single instance of <%s> and if you need to mount a new one, ensure any previous ones have unmounted first. body body body
+[00:07:02.390] Server  LOG     ✓ Compiled in 24ms
+[00:07:11.829] Server  LOG     ✓ Compiled in 22ms

@@ -44,6 +44,7 @@ model ScriptFormat {
   // Reference materials for briefs
   referenceVideos    String   @default("[]") // JSON array of URLs
   footageLinks       String   @default("[]") // JSON array of URLs
+  notes              String?
 
   // Store example scripts as JSON array
   examples           String   @default("[]")

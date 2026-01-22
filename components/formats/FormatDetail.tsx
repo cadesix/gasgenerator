@@ -16,6 +16,9 @@ interface FormatDetailProps {
     projectId: string | null
     examples: string
     sections: string
+    referenceVideos: string
+    footageLinks: string
+    notes: string | null
   }
   projects: Array<{ id: string; name: string }>
 }
@@ -36,6 +39,17 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
   const [examples, setExamples] = useState<string[]>(JSON.parse(format.examples) as string[])
   const [newExample, setNewExample] = useState('')
   const [isAddingExample, setIsAddingExample] = useState(false)
+
+  const [referenceVideos, setReferenceVideos] = useState<string[]>(JSON.parse(format.referenceVideos) as string[])
+  const [newReferenceVideo, setNewReferenceVideo] = useState('')
+  const [isAddingReferenceVideo, setIsAddingReferenceVideo] = useState(false)
+
+  const [footageLinks, setFootageLinks] = useState<string[]>(JSON.parse(format.footageLinks) as string[])
+  const [newFootageLink, setNewFootageLink] = useState('')
+  const [isAddingFootageLink, setIsAddingFootageLink] = useState(false)
+
+  const [notes, setNotes] = useState(format.notes || '')
+  const [isEditingNotes, setIsEditingNotes] = useState(false)
 
   const handleSaveInfo = async () => {
     setIsSaving(true)
@@ -164,6 +178,133 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
     } catch (error) {
       console.error('Error deleting example:', error)
       alert('Failed to delete example. Please try again.')
+    }
+  }
+
+  const handleAddReferenceVideo = async () => {
+    if (!newReferenceVideo.trim()) return
+
+    setIsAddingReferenceVideo(true)
+    try {
+      const updatedVideos = [...referenceVideos, newReferenceVideo.trim()]
+
+      const response = await fetch(`/api/formats/${format.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          referenceVideos: JSON.stringify(updatedVideos),
+        }),
+      })
+
+      if (!response.ok) throw new Error('Failed to add reference video')
+
+      setReferenceVideos(updatedVideos)
+      setNewReferenceVideo('')
+      router.refresh()
+    } catch (error) {
+      console.error('Error adding reference video:', error)
+      alert('Failed to add reference video. Please try again.')
+    } finally {
+      setIsAddingReferenceVideo(false)
+    }
+  }
+
+  const handleDeleteReferenceVideo = async (index: number) => {
+    if (!confirm('Are you sure you want to delete this reference video?')) return
+
+    try {
+      const updatedVideos = referenceVideos.filter((_, i) => i !== index)
+
+      const response = await fetch(`/api/formats/${format.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          referenceVideos: JSON.stringify(updatedVideos),
+        }),
+      })
+
+      if (!response.ok) throw new Error('Failed to delete reference video')
+
+      setReferenceVideos(updatedVideos)
+      router.refresh()
+    } catch (error) {
+      console.error('Error deleting reference video:', error)
+      alert('Failed to delete reference video. Please try again.')
+    }
+  }
+
+  const handleAddFootageLink = async () => {
+    if (!newFootageLink.trim()) return
+
+    setIsAddingFootageLink(true)
+    try {
+      const updatedLinks = [...footageLinks, newFootageLink.trim()]
+
+      const response = await fetch(`/api/formats/${format.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          footageLinks: JSON.stringify(updatedLinks),
+        }),
+      })
+
+      if (!response.ok) throw new Error('Failed to add footage link')
+
+      setFootageLinks(updatedLinks)
+      setNewFootageLink('')
+      router.refresh()
+    } catch (error) {
+      console.error('Error adding footage link:', error)
+      alert('Failed to add footage link. Please try again.')
+    } finally {
+      setIsAddingFootageLink(false)
+    }
+  }
+
+  const handleDeleteFootageLink = async (index: number) => {
+    if (!confirm('Are you sure you want to delete this footage link?')) return
+
+    try {
+      const updatedLinks = footageLinks.filter((_, i) => i !== index)
+
+      const response = await fetch(`/api/formats/${format.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          footageLinks: JSON.stringify(updatedLinks),
+        }),
+      })
+
+      if (!response.ok) throw new Error('Failed to delete footage link')
+
+      setFootageLinks(updatedLinks)
+      router.refresh()
+    } catch (error) {
+      console.error('Error deleting footage link:', error)
+      alert('Failed to delete footage link. Please try again.')
+    }
+  }
+
+  const handleSaveNotes = async () => {
+    setIsSaving(true)
+    try {
+      const response = await fetch(`/api/formats/${format.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          notes: notes.trim() || null,
+        }),
+      })
+
+      if (!response.ok) throw new Error('Failed to update notes')
+
+      setIsEditingNotes(false)
+      router.refresh()
+    } catch (error) {
+      console.error('Error updating notes:', error)
+      alert('Failed to update notes. Please try again.')
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -341,25 +482,28 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
             <p className="text-sm text-neutral-600">
               Define the sections that scripts in this format will have
             </p>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {editingSections.map((section, index) => (
-                <div key={index} className="flex gap-2">
+                <div key={index}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs text-neutral-500">Section {index + 1}</span>
+                    {editingSections.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveSection(index)}
+                        className="text-sm text-neutral-600 hover:text-neutral-900"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
                   <input
                     type="text"
                     value={section}
                     onChange={(e) => handleSectionChange(index, e.target.value)}
                     placeholder={`Section ${index + 1}`}
-                    className="flex-1 px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                    className="w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
                   />
-                  {editingSections.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveSection(index)}
-                      className="px-3 py-2 text-sm text-neutral-600 hover:text-neutral-900"
-                    >
-                      Remove
-                    </button>
-                  )}
                 </div>
               ))}
               <button
@@ -389,23 +533,26 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
         )}
       </Card>
 
-      <Card>
+      <Card className="mb-8">
         <div className="flex justify-between items-start mb-4">
           <h2 className="text-xl font-semibold text-neutral-900">Example Scripts</h2>
         </div>
 
         <div className="space-y-4">
           {examples.map((example, idx) => (
-            <div key={idx} className="flex gap-2">
-              <div className="flex-1 p-4 bg-neutral-50 text-sm text-neutral-700 whitespace-pre-wrap">
+            <div key={idx}>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs font-medium text-neutral-500">Example {idx + 1}</span>
+                <button
+                  onClick={() => handleDeleteExample(idx)}
+                  className="text-sm text-neutral-600 hover:text-neutral-900"
+                >
+                  Delete
+                </button>
+              </div>
+              <div className="p-4 bg-neutral-50 text-sm text-neutral-700 whitespace-pre-wrap">
                 {example}
               </div>
-              <button
-                onClick={() => handleDeleteExample(idx)}
-                className="text-sm text-neutral-600 hover:text-neutral-900"
-              >
-                Delete
-              </button>
             </div>
           ))}
 
@@ -426,6 +573,160 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
             </Button>
           </div>
         </div>
+      </Card>
+
+      <Card className="mb-8">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-xl font-semibold text-neutral-900">Reference Videos</h2>
+        </div>
+
+        <div className="space-y-4">
+          {referenceVideos.length > 0 ? (
+            referenceVideos.map((video, idx) => (
+              <div key={idx}>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs font-medium text-neutral-500">Video {idx + 1}</span>
+                  <button
+                    onClick={() => handleDeleteReferenceVideo(idx)}
+                    className="text-sm text-neutral-600 hover:text-neutral-900"
+                  >
+                    Delete
+                  </button>
+                </div>
+                <div className="p-3 bg-neutral-50 text-sm text-neutral-700">
+                  <a
+                    href={video}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-neutral-900 hover:underline"
+                  >
+                    {video}
+                  </a>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-neutral-500">No reference videos added yet</p>
+          )}
+
+          <div className="pt-4 border-t border-neutral-200">
+            <input
+              type="url"
+              value={newReferenceVideo}
+              onChange={(e) => setNewReferenceVideo(e.target.value)}
+              placeholder="https://"
+              className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm mb-3"
+            />
+            <Button
+              onClick={handleAddReferenceVideo}
+              isLoading={isAddingReferenceVideo}
+              disabled={!newReferenceVideo.trim()}
+            >
+              Add Reference Video
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      <Card className="mb-8">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-xl font-semibold text-neutral-900">Footage</h2>
+        </div>
+
+        <div className="space-y-4">
+          {footageLinks.length > 0 ? (
+            footageLinks.map((link, idx) => (
+              <div key={idx}>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs font-medium text-neutral-500">Link {idx + 1}</span>
+                  <button
+                    onClick={() => handleDeleteFootageLink(idx)}
+                    className="text-sm text-neutral-600 hover:text-neutral-900"
+                  >
+                    Delete
+                  </button>
+                </div>
+                <div className="p-3 bg-neutral-50 text-sm text-neutral-700">
+                  <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-neutral-900 hover:underline"
+                  >
+                    {link}
+                  </a>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-neutral-500">No footage links added yet</p>
+          )}
+
+          <div className="pt-4 border-t border-neutral-200">
+            <input
+              type="url"
+              value={newFootageLink}
+              onChange={(e) => setNewFootageLink(e.target.value)}
+              placeholder="https://"
+              className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm mb-3"
+            />
+            <Button
+              onClick={handleAddFootageLink}
+              isLoading={isAddingFootageLink}
+              disabled={!newFootageLink.trim()}
+            >
+              Add Footage Link
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      <Card>
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-xl font-semibold text-neutral-900">Notes</h2>
+          {!isEditingNotes && (
+            <button
+              onClick={() => setIsEditingNotes(true)}
+              className="text-sm text-neutral-900 hover:text-neutral-600"
+            >
+              Edit
+            </button>
+          )}
+        </div>
+
+        {!isEditingNotes ? (
+          <div>
+            {notes ? (
+              <p className="text-neutral-900 whitespace-pre-wrap">{notes}</p>
+            ) : (
+              <p className="text-sm text-neutral-500">No notes added yet</p>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={4}
+              className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+            />
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setNotes(format.notes || '')
+                  setIsEditingNotes(false)
+                }}
+                className="text-sm text-neutral-600 hover:text-neutral-900"
+                disabled={isSaving}
+              >
+                Cancel
+              </button>
+              <Button onClick={handleSaveNotes} isLoading={isSaving}>
+                Save
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
     </>
   )

@@ -18,15 +18,22 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
-  // Parse initial examples if editing
-  const initialExamples = initialData?.examples
-    ? (JSON.parse(initialData.examples) as string[]).join('\n---\n')
-    : ''
-
-  // Parse initial sections if editing
+  // Parse initial data if editing
   const initialSections = initialData?.sections
     ? (JSON.parse(initialData.sections) as string[])
     : ['hook', 'body']
+
+  const initialExamples = initialData?.examples
+    ? (JSON.parse(initialData.examples) as string[])
+    : []
+
+  const initialReferenceVideos = initialData?.referenceVideos
+    ? (JSON.parse(initialData.referenceVideos) as string[])
+    : []
+
+  const initialFootageLinks = initialData?.footageLinks
+    ? (JSON.parse(initialData.footageLinks) as string[])
+    : []
 
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
@@ -34,10 +41,13 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
     visualDescription: initialData?.visualDescription || '',
     isGlobal: initialData ? String(initialData.isGlobal) : 'true',
     projectId: initialData?.projectId || '',
-    examples: initialExamples,
+    notes: initialData?.notes || '',
   })
 
   const [sections, setSections] = useState<string[]>(initialSections)
+  const [examples, setExamples] = useState<string[]>(initialExamples)
+  const [referenceVideos, setReferenceVideos] = useState<string[]>(initialReferenceVideos)
+  const [footageLinks, setFootageLinks] = useState<string[]>(initialFootageLinks)
 
   const isEditing = !!initialData
 
@@ -57,16 +67,53 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
     }
   }
 
+  const handleExampleChange = (index: number, value: string) => {
+    const newExamples = [...examples]
+    newExamples[index] = value
+    setExamples(newExamples)
+  }
+
+  const addExample = () => {
+    setExamples([...examples, ''])
+  }
+
+  const removeExample = (index: number) => {
+    setExamples(examples.filter((_, i) => i !== index))
+  }
+
+  const handleReferenceVideoChange = (index: number, value: string) => {
+    const newVideos = [...referenceVideos]
+    newVideos[index] = value
+    setReferenceVideos(newVideos)
+  }
+
+  const addReferenceVideo = () => {
+    setReferenceVideos([...referenceVideos, ''])
+  }
+
+  const removeReferenceVideo = (index: number) => {
+    setReferenceVideos(referenceVideos.filter((_, i) => i !== index))
+  }
+
+  const handleFootageLinkChange = (index: number, value: string) => {
+    const newLinks = [...footageLinks]
+    newLinks[index] = value
+    setFootageLinks(newLinks)
+  }
+
+  const addFootageLink = () => {
+    setFootageLinks([...footageLinks, ''])
+  }
+
+  const removeFootageLink = (index: number) => {
+    setFootageLinks(footageLinks.filter((_, i) => i !== index))
+  }
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
-      const examplesArray = formData.examples
-        .split('---')
-        .map((ex: string) => ex.trim())
-        .filter((ex: string) => ex.length > 0)
-
       const sectionsArray = sections
         .map((s) => s.trim())
         .filter((s) => s.length > 0)
@@ -77,14 +124,29 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
         return
       }
 
+      const examplesArray = examples
+        .map((ex) => ex.trim())
+        .filter((ex) => ex.length > 0)
+
+      const referenceVideosArray = referenceVideos
+        .map((v) => v.trim())
+        .filter((v) => v.length > 0)
+
+      const footageLinksArray = footageLinks
+        .map((l) => l.trim())
+        .filter((l) => l.length > 0)
+
       const payload = {
         name: formData.name,
         structure: formData.structure,
         visualDescription: formData.visualDescription,
         isGlobal: formData.isGlobal === 'true',
         projectId: formData.isGlobal === 'false' ? formData.projectId : null,
-        examples: JSON.stringify(examplesArray),
         sections: JSON.stringify(sectionsArray),
+        examples: JSON.stringify(examplesArray),
+        referenceVideos: JSON.stringify(referenceVideosArray),
+        footageLinks: JSON.stringify(footageLinksArray),
+        notes: formData.notes.trim() || null,
       }
 
       const url = isEditing ? `/api/formats/${initialData.id}` : '/api/formats'
@@ -114,7 +176,6 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
         <div className="space-y-6">
           <Input
             label="Format Name"
-            placeholder="e.g., UGC Hook + Body"
             required
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -122,8 +183,6 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
 
           <Textarea
             label="Structure"
-            placeholder="e.g., Personal hook (3s) → Problem → Solution → CTA"
-            helperText="Describe the flow and components of this format"
             required
             rows={3}
             value={formData.structure}
@@ -132,8 +191,6 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
 
           <Textarea
             label="Visual Description"
-            placeholder="e.g., Person speaking to camera in casual setting, cut between locations"
-            helperText="Describe visual elements to help create an editor brief"
             required
             rows={3}
             value={formData.visualDescription}
@@ -146,29 +203,28 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
             <label className="block text-sm font-medium text-neutral-700 mb-2">
               Script Sections
             </label>
-            <p className="text-xs text-neutral-500 mb-3">
-              Define the sections that scripts in this format will have (e.g., hook, body, cta)
-            </p>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {sections.map((section, index) => (
-                <div key={index} className="flex gap-2">
+                <div key={index}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs text-neutral-500">Section {index + 1}</span>
+                    {sections.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeSection(index)}
+                        className="text-sm text-neutral-600 hover:text-neutral-900"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
                   <input
                     type="text"
                     value={section}
                     onChange={(e) => handleSectionChange(index, e.target.value)}
-                    placeholder={`Section ${index + 1} (e.g., ${index === 0 ? 'hook' : index === 1 ? 'body' : 'cta'})`}
                     required
-                    className="flex-1 px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                    className="w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
                   />
-                  {sections.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeSection(index)}
-                      className="px-3 py-2 text-sm text-neutral-600 hover:text-neutral-900"
-                    >
-                      Remove
-                    </button>
-                  )}
                 </div>
               ))}
               <button
@@ -210,13 +266,118 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
             </Select>
           )}
 
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-2">
+              Example Scripts
+            </label>
+            <div className="space-y-3">
+              {examples.map((example, index) => (
+                <div key={index}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs text-neutral-500">Example {index + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeExample(index)}
+                      className="text-sm text-neutral-600 hover:text-neutral-900"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <textarea
+                    value={example}
+                    onChange={(e) => handleExampleChange(index, e.target.value)}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                  />
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addExample}
+                className="text-sm text-neutral-900 hover:text-neutral-600"
+              >
+                + Add Example
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-2">
+              Reference Videos
+            </label>
+            <div className="space-y-3">
+              {referenceVideos.map((video, index) => (
+                <div key={index}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs text-neutral-500">Video {index + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeReferenceVideo(index)}
+                      className="text-sm text-neutral-600 hover:text-neutral-900"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <input
+                    type="url"
+                    value={video}
+                    onChange={(e) => handleReferenceVideoChange(index, e.target.value)}
+                    placeholder="https://"
+                    className="w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                  />
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addReferenceVideo}
+                className="text-sm text-neutral-900 hover:text-neutral-600"
+              >
+                + Add Reference Video
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-2">
+              Footage
+            </label>
+            <div className="space-y-3">
+              {footageLinks.map((link, index) => (
+                <div key={index}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs text-neutral-500">Link {index + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeFootageLink(index)}
+                      className="text-sm text-neutral-600 hover:text-neutral-900"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <input
+                    type="url"
+                    value={link}
+                    onChange={(e) => handleFootageLinkChange(index, e.target.value)}
+                    placeholder="https://"
+                    className="w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                  />
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addFootageLink}
+                className="text-sm text-neutral-900 hover:text-neutral-600"
+              >
+                + Add Footage Link
+              </button>
+            </div>
+          </div>
+
           <Textarea
-            label="Example Scripts (Optional)"
-            placeholder='Hook: "Example hook text here" Body: "Example body text here"&#10;---&#10;Hook: "Another example hook" Body: "Another example body"'
-            helperText="Paste example scripts in this format, separated by --- on new lines"
-            rows={6}
-            value={formData.examples}
-            onChange={(e) => setFormData({ ...formData, examples: e.target.value })}
+            label="Notes"
+            rows={4}
+            value={formData.notes}
+            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
           />
 
           <div className="flex gap-3">

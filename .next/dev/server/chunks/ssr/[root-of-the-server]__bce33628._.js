@@ -311,22 +311,26 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Card$2e$
 function FormatForm({ projects, initialData }) {
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
     const [isLoading, setIsLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
-    // Parse initial examples if editing
-    const initialExamples = initialData?.examples ? JSON.parse(initialData.examples).join('\n---\n') : '';
-    // Parse initial sections if editing
+    // Parse initial data if editing
     const initialSections = initialData?.sections ? JSON.parse(initialData.sections) : [
         'hook',
         'body'
     ];
+    const initialExamples = initialData?.examples ? JSON.parse(initialData.examples) : [];
+    const initialReferenceVideos = initialData?.referenceVideos ? JSON.parse(initialData.referenceVideos) : [];
+    const initialFootageLinks = initialData?.footageLinks ? JSON.parse(initialData.footageLinks) : [];
     const [formData, setFormData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])({
         name: initialData?.name || '',
         structure: initialData?.structure || '',
         visualDescription: initialData?.visualDescription || '',
         isGlobal: initialData ? String(initialData.isGlobal) : 'true',
         projectId: initialData?.projectId || '',
-        examples: initialExamples
+        notes: initialData?.notes || ''
     });
     const [sections, setSections] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(initialSections);
+    const [examples, setExamples] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(initialExamples);
+    const [referenceVideos, setReferenceVideos] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(initialReferenceVideos);
+    const [footageLinks, setFootageLinks] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(initialFootageLinks);
     const isEditing = !!initialData;
     const handleSectionChange = (index, value)=>{
         const newSections = [
@@ -346,25 +350,78 @@ function FormatForm({ projects, initialData }) {
             setSections(sections.filter((_, i)=>i !== index));
         }
     };
+    const handleExampleChange = (index, value)=>{
+        const newExamples = [
+            ...examples
+        ];
+        newExamples[index] = value;
+        setExamples(newExamples);
+    };
+    const addExample = ()=>{
+        setExamples([
+            ...examples,
+            ''
+        ]);
+    };
+    const removeExample = (index)=>{
+        setExamples(examples.filter((_, i)=>i !== index));
+    };
+    const handleReferenceVideoChange = (index, value)=>{
+        const newVideos = [
+            ...referenceVideos
+        ];
+        newVideos[index] = value;
+        setReferenceVideos(newVideos);
+    };
+    const addReferenceVideo = ()=>{
+        setReferenceVideos([
+            ...referenceVideos,
+            ''
+        ]);
+    };
+    const removeReferenceVideo = (index)=>{
+        setReferenceVideos(referenceVideos.filter((_, i)=>i !== index));
+    };
+    const handleFootageLinkChange = (index, value)=>{
+        const newLinks = [
+            ...footageLinks
+        ];
+        newLinks[index] = value;
+        setFootageLinks(newLinks);
+    };
+    const addFootageLink = ()=>{
+        setFootageLinks([
+            ...footageLinks,
+            ''
+        ]);
+    };
+    const removeFootageLink = (index)=>{
+        setFootageLinks(footageLinks.filter((_, i)=>i !== index));
+    };
     const handleSubmit = async (e)=>{
         e.preventDefault();
         setIsLoading(true);
         try {
-            const examplesArray = formData.examples.split('---').map((ex)=>ex.trim()).filter((ex)=>ex.length > 0);
             const sectionsArray = sections.map((s)=>s.trim()).filter((s)=>s.length > 0);
             if (sectionsArray.length === 0) {
                 alert('Please add at least one section');
                 setIsLoading(false);
                 return;
             }
+            const examplesArray = examples.map((ex)=>ex.trim()).filter((ex)=>ex.length > 0);
+            const referenceVideosArray = referenceVideos.map((v)=>v.trim()).filter((v)=>v.length > 0);
+            const footageLinksArray = footageLinks.map((l)=>l.trim()).filter((l)=>l.length > 0);
             const payload = {
                 name: formData.name,
                 structure: formData.structure,
                 visualDescription: formData.visualDescription,
                 isGlobal: formData.isGlobal === 'true',
                 projectId: formData.isGlobal === 'false' ? formData.projectId : null,
+                sections: JSON.stringify(sectionsArray),
                 examples: JSON.stringify(examplesArray),
-                sections: JSON.stringify(sectionsArray)
+                referenceVideos: JSON.stringify(referenceVideosArray),
+                footageLinks: JSON.stringify(footageLinksArray),
+                notes: formData.notes.trim() || null
             };
             const url = isEditing ? `/api/formats/${initialData.id}` : '/api/formats';
             const method = isEditing ? 'PATCH' : 'POST';
@@ -393,7 +450,6 @@ function FormatForm({ projects, initialData }) {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
                         label: "Format Name",
-                        placeholder: "e.g., UGC Hook + Body",
                         required: true,
                         value: formData.name,
                         onChange: (e)=>setFormData({
@@ -402,13 +458,11 @@ function FormatForm({ projects, initialData }) {
                             })
                     }, void 0, false, {
                         fileName: "[project]/components/formats/FormatForm.tsx",
-                        lineNumber: 115,
+                        lineNumber: 177,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Textarea$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Textarea"], {
                         label: "Structure",
-                        placeholder: "e.g., Personal hook (3s) → Problem → Solution → CTA",
-                        helperText: "Describe the flow and components of this format",
                         required: true,
                         rows: 3,
                         value: formData.structure,
@@ -418,13 +472,11 @@ function FormatForm({ projects, initialData }) {
                             })
                     }, void 0, false, {
                         fileName: "[project]/components/formats/FormatForm.tsx",
-                        lineNumber: 123,
+                        lineNumber: 184,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Textarea$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Textarea"], {
                         label: "Visual Description",
-                        placeholder: "e.g., Person speaking to camera in casual setting, cut between locations",
-                        helperText: "Describe visual elements to help create an editor brief",
                         required: true,
                         rows: 3,
                         value: formData.visualDescription,
@@ -434,7 +486,7 @@ function FormatForm({ projects, initialData }) {
                             })
                     }, void 0, false, {
                         fileName: "[project]/components/formats/FormatForm.tsx",
-                        lineNumber: 133,
+                        lineNumber: 192,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -444,49 +496,59 @@ function FormatForm({ projects, initialData }) {
                                 children: "Script Sections"
                             }, void 0, false, {
                                 fileName: "[project]/components/formats/FormatForm.tsx",
-                                lineNumber: 146,
-                                columnNumber: 13
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "text-xs text-neutral-500 mb-3",
-                                children: "Define the sections that scripts in this format will have (e.g., hook, body, cta)"
-                            }, void 0, false, {
-                                fileName: "[project]/components/formats/FormatForm.tsx",
-                                lineNumber: 149,
+                                lineNumber: 203,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "space-y-2",
+                                className: "space-y-3",
                                 children: [
                                     sections.map((section, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex gap-2",
                                             children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex justify-between items-center mb-1",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "text-xs text-neutral-500",
+                                                            children: [
+                                                                "Section ",
+                                                                index + 1
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/formats/FormatForm.tsx",
+                                                            lineNumber: 210,
+                                                            columnNumber: 21
+                                                        }, this),
+                                                        sections.length > 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            type: "button",
+                                                            onClick: ()=>removeSection(index),
+                                                            className: "text-sm text-neutral-600 hover:text-neutral-900",
+                                                            children: "Remove"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/formats/FormatForm.tsx",
+                                                            lineNumber: 212,
+                                                            columnNumber: 23
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/formats/FormatForm.tsx",
+                                                    lineNumber: 209,
+                                                    columnNumber: 19
+                                                }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                                     type: "text",
                                                     value: section,
                                                     onChange: (e)=>handleSectionChange(index, e.target.value),
-                                                    placeholder: `Section ${index + 1} (e.g., ${index === 0 ? 'hook' : index === 1 ? 'body' : 'cta'})`,
                                                     required: true,
-                                                    className: "flex-1 px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                                                    className: "w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/formats/FormatForm.tsx",
-                                                    lineNumber: 155,
+                                                    lineNumber: 221,
                                                     columnNumber: 19
-                                                }, this),
-                                                sections.length > 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                    type: "button",
-                                                    onClick: ()=>removeSection(index),
-                                                    className: "px-3 py-2 text-sm text-neutral-600 hover:text-neutral-900",
-                                                    children: "Remove"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/formats/FormatForm.tsx",
-                                                    lineNumber: 164,
-                                                    columnNumber: 21
                                                 }, this)
                                             ]
                                         }, index, true, {
                                             fileName: "[project]/components/formats/FormatForm.tsx",
-                                            lineNumber: 154,
+                                            lineNumber: 208,
                                             columnNumber: 17
                                         }, this)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -496,19 +558,19 @@ function FormatForm({ projects, initialData }) {
                                         children: "+ Add Section"
                                     }, void 0, false, {
                                         fileName: "[project]/components/formats/FormatForm.tsx",
-                                        lineNumber: 174,
+                                        lineNumber: 230,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/formats/FormatForm.tsx",
-                                lineNumber: 152,
+                                lineNumber: 206,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/formats/FormatForm.tsx",
-                        lineNumber: 145,
+                        lineNumber: 202,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Select"], {
@@ -525,7 +587,7 @@ function FormatForm({ projects, initialData }) {
                                 children: "Global (available for all apps)"
                             }, void 0, false, {
                                 fileName: "[project]/components/formats/FormatForm.tsx",
-                                lineNumber: 191,
+                                lineNumber: 247,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -533,13 +595,13 @@ function FormatForm({ projects, initialData }) {
                                 children: "App-specific"
                             }, void 0, false, {
                                 fileName: "[project]/components/formats/FormatForm.tsx",
-                                lineNumber: 192,
+                                lineNumber: 248,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/formats/FormatForm.tsx",
-                        lineNumber: 184,
+                        lineNumber: 240,
                         columnNumber: 11
                     }, this),
                     formData.isGlobal === 'false' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Select"], {
@@ -556,7 +618,7 @@ function FormatForm({ projects, initialData }) {
                                 children: "Select an app"
                             }, void 0, false, {
                                 fileName: "[project]/components/formats/FormatForm.tsx",
-                                lineNumber: 204,
+                                lineNumber: 260,
                                 columnNumber: 15
                             }, this),
                             projects.map((project)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -564,28 +626,277 @@ function FormatForm({ projects, initialData }) {
                                     children: project.name
                                 }, project.id, false, {
                                     fileName: "[project]/components/formats/FormatForm.tsx",
-                                    lineNumber: 206,
+                                    lineNumber: 262,
                                     columnNumber: 17
                                 }, this))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/formats/FormatForm.tsx",
-                        lineNumber: 196,
+                        lineNumber: 252,
                         columnNumber: 13
                     }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                className: "block text-sm font-medium text-neutral-700 mb-2",
+                                children: "Example Scripts"
+                            }, void 0, false, {
+                                fileName: "[project]/components/formats/FormatForm.tsx",
+                                lineNumber: 270,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "space-y-3",
+                                children: [
+                                    examples.map((example, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex justify-between items-center mb-1",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "text-xs text-neutral-500",
+                                                            children: [
+                                                                "Example ",
+                                                                index + 1
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/formats/FormatForm.tsx",
+                                                            lineNumber: 277,
+                                                            columnNumber: 21
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            type: "button",
+                                                            onClick: ()=>removeExample(index),
+                                                            className: "text-sm text-neutral-600 hover:text-neutral-900",
+                                                            children: "Remove"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/formats/FormatForm.tsx",
+                                                            lineNumber: 278,
+                                                            columnNumber: 21
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/formats/FormatForm.tsx",
+                                                    lineNumber: 276,
+                                                    columnNumber: 19
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
+                                                    value: example,
+                                                    onChange: (e)=>handleExampleChange(index, e.target.value),
+                                                    rows: 3,
+                                                    className: "w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/formats/FormatForm.tsx",
+                                                    lineNumber: 286,
+                                                    columnNumber: 19
+                                                }, this)
+                                            ]
+                                        }, index, true, {
+                                            fileName: "[project]/components/formats/FormatForm.tsx",
+                                            lineNumber: 275,
+                                            columnNumber: 17
+                                        }, this)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        type: "button",
+                                        onClick: addExample,
+                                        className: "text-sm text-neutral-900 hover:text-neutral-600",
+                                        children: "+ Add Example"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/formats/FormatForm.tsx",
+                                        lineNumber: 294,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/formats/FormatForm.tsx",
+                                lineNumber: 273,
+                                columnNumber: 13
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/formats/FormatForm.tsx",
+                        lineNumber: 269,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                className: "block text-sm font-medium text-neutral-700 mb-2",
+                                children: "Reference Videos"
+                            }, void 0, false, {
+                                fileName: "[project]/components/formats/FormatForm.tsx",
+                                lineNumber: 305,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "space-y-3",
+                                children: [
+                                    referenceVideos.map((video, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex justify-between items-center mb-1",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "text-xs text-neutral-500",
+                                                            children: [
+                                                                "Video ",
+                                                                index + 1
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/formats/FormatForm.tsx",
+                                                            lineNumber: 312,
+                                                            columnNumber: 21
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            type: "button",
+                                                            onClick: ()=>removeReferenceVideo(index),
+                                                            className: "text-sm text-neutral-600 hover:text-neutral-900",
+                                                            children: "Remove"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/formats/FormatForm.tsx",
+                                                            lineNumber: 313,
+                                                            columnNumber: 21
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/formats/FormatForm.tsx",
+                                                    lineNumber: 311,
+                                                    columnNumber: 19
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                    type: "url",
+                                                    value: video,
+                                                    onChange: (e)=>handleReferenceVideoChange(index, e.target.value),
+                                                    placeholder: "https://",
+                                                    className: "w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/formats/FormatForm.tsx",
+                                                    lineNumber: 321,
+                                                    columnNumber: 19
+                                                }, this)
+                                            ]
+                                        }, index, true, {
+                                            fileName: "[project]/components/formats/FormatForm.tsx",
+                                            lineNumber: 310,
+                                            columnNumber: 17
+                                        }, this)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        type: "button",
+                                        onClick: addReferenceVideo,
+                                        className: "text-sm text-neutral-900 hover:text-neutral-600",
+                                        children: "+ Add Reference Video"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/formats/FormatForm.tsx",
+                                        lineNumber: 330,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/formats/FormatForm.tsx",
+                                lineNumber: 308,
+                                columnNumber: 13
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/formats/FormatForm.tsx",
+                        lineNumber: 304,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                className: "block text-sm font-medium text-neutral-700 mb-2",
+                                children: "Footage"
+                            }, void 0, false, {
+                                fileName: "[project]/components/formats/FormatForm.tsx",
+                                lineNumber: 341,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "space-y-3",
+                                children: [
+                                    footageLinks.map((link, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex justify-between items-center mb-1",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "text-xs text-neutral-500",
+                                                            children: [
+                                                                "Link ",
+                                                                index + 1
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/formats/FormatForm.tsx",
+                                                            lineNumber: 348,
+                                                            columnNumber: 21
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            type: "button",
+                                                            onClick: ()=>removeFootageLink(index),
+                                                            className: "text-sm text-neutral-600 hover:text-neutral-900",
+                                                            children: "Remove"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/formats/FormatForm.tsx",
+                                                            lineNumber: 349,
+                                                            columnNumber: 21
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/formats/FormatForm.tsx",
+                                                    lineNumber: 347,
+                                                    columnNumber: 19
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                    type: "url",
+                                                    value: link,
+                                                    onChange: (e)=>handleFootageLinkChange(index, e.target.value),
+                                                    placeholder: "https://",
+                                                    className: "w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/formats/FormatForm.tsx",
+                                                    lineNumber: 357,
+                                                    columnNumber: 19
+                                                }, this)
+                                            ]
+                                        }, index, true, {
+                                            fileName: "[project]/components/formats/FormatForm.tsx",
+                                            lineNumber: 346,
+                                            columnNumber: 17
+                                        }, this)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        type: "button",
+                                        onClick: addFootageLink,
+                                        className: "text-sm text-neutral-900 hover:text-neutral-600",
+                                        children: "+ Add Footage Link"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/formats/FormatForm.tsx",
+                                        lineNumber: 366,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/formats/FormatForm.tsx",
+                                lineNumber: 344,
+                                columnNumber: 13
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/formats/FormatForm.tsx",
+                        lineNumber: 340,
+                        columnNumber: 11
+                    }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Textarea$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Textarea"], {
-                        label: "Example Scripts (Optional)",
-                        placeholder: 'Hook: "Example hook text here" Body: "Example body text here" --- Hook: "Another example hook" Body: "Another example body"',
-                        helperText: "Paste example scripts in this format, separated by --- on new lines",
-                        rows: 6,
-                        value: formData.examples,
+                        label: "Notes",
+                        rows: 4,
+                        value: formData.notes,
                         onChange: (e)=>setFormData({
                                 ...formData,
-                                examples: e.target.value
+                                notes: e.target.value
                             })
                     }, void 0, false, {
                         fileName: "[project]/components/formats/FormatForm.tsx",
-                        lineNumber: 213,
+                        lineNumber: 376,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -597,7 +908,7 @@ function FormatForm({ projects, initialData }) {
                                 children: isEditing ? 'Update Format' : 'Create Format'
                             }, void 0, false, {
                                 fileName: "[project]/components/formats/FormatForm.tsx",
-                                lineNumber: 223,
+                                lineNumber: 384,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -607,29 +918,29 @@ function FormatForm({ projects, initialData }) {
                                 children: "Cancel"
                             }, void 0, false, {
                                 fileName: "[project]/components/formats/FormatForm.tsx",
-                                lineNumber: 226,
+                                lineNumber: 387,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/formats/FormatForm.tsx",
-                        lineNumber: 222,
+                        lineNumber: 383,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/formats/FormatForm.tsx",
-                lineNumber: 114,
+                lineNumber: 176,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/formats/FormatForm.tsx",
-            lineNumber: 113,
+            lineNumber: 175,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/formats/FormatForm.tsx",
-        lineNumber: 112,
+        lineNumber: 174,
         columnNumber: 5
     }, this);
 }

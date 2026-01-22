@@ -1,3 +1,9 @@
 {
-  "/scripts/[id]/page": "app/scripts/[id]/page.js"
+  "/api/editors/route": "app/api/editors/route.js",
+  "/briefs/[id]/page": "app/briefs/[id]/page.js",
+  "/briefs/page": "app/briefs/page.js",
+  "/formats/new/page": "app/formats/new/page.js",
+  "/page": "app/page.js",
+  "/scripts/[id]/page": "app/scripts/[id]/page.js",
+  "/scripts/page": "app/scripts/page.js"
 }

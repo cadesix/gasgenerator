@@ -23,6 +23,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
     if (body.examples !== undefined) updateData.examples = body.examples
     if (body.sections !== undefined) updateData.sections = body.sections
+    if (body.referenceVideos !== undefined) updateData.referenceVideos = body.referenceVideos
+    if (body.footageLinks !== undefined) updateData.footageLinks = body.footageLinks
+    if (body.notes !== undefined) updateData.notes = body.notes
 
     const format = await prisma.scriptFormat.update({
       where: { id },
