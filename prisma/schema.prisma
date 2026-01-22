@@ -1,0 +1,150 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id              String   @id @default(uuid())
+  name            String
+  description     String   @default("")
+  targetAudience  String   @default("")
+
+  // Store as JSON for flexibility - easy to change structure
+  examples        String   @default("[]")  // JSON array
+  metadata        String?  @default("{}")  // Extra fields you might add later
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime? // Soft delete - never lose data
+
+  formats         ScriptFormat[]
+  savedScripts    SavedScript[]
+  ideas           Idea[]
+}
+
+model ScriptFormat {
+  id                 String   @id @default(uuid())
+  name               String
+  structure          String   @default("")
+  visualDescription  String   @default("")
+  isGlobal           Boolean  @default(false)
+
+  projectId          String?
+
+  // Define dynamic sections for this format
+  sections           String   @default("[\"hook\",\"body\"]") // JSON array of section names
+
+  // Reference materials for briefs
+  referenceVideos    String   @default("[]") // JSON array of URLs
+  footageLinks       String   @default("[]") // JSON array of URLs
+
+  // Store example scripts as JSON array
+  examples           String   @default("[]")
+
+  // Flexibility for future additions
+  metadata           String?  @default("{}")
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  deletedAt          DateTime?
+
+  project            Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  savedScripts       SavedScript[]
+
+  @@index([projectId])
+}
+
+model SavedScript {
+  id          String   @id @default(uuid())
+  title       String   @default("Untitled Script")
+
+  // Dynamic content based on format sections
+  // e.g., {"hook": "...", "body": "..."} or {"intro": "...", "problem": "...", "solution": "..."}
+  content     String   @default("{}")
+
+  shareId     String   @unique @default(uuid())
+
+  projectId   String
+  formatId    String?
+
+  // Future: add tags, ratings, etc
+  metadata    String?  @default("{}")
+
+  savedAt     DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  format      ScriptFormat? @relation(fields: [formatId], references: [id])
+  brief       Brief?
+
+  @@index([projectId])
+  @@index([formatId])
+  @@index([shareId])
+}
+
+model Brief {
+  id              String   @id @default(uuid())
+
+  // One-to-one with script
+  scriptId        String   @unique
+  script          SavedScript @relation(fields: [scriptId], references: [id], onDelete: Cascade)
+
+  // PM/workflow fields
+  editorId        String?
+  editor          Editor?  @relation(fields: [editorId], references: [id])
+  status          String   @default("assigned") // assigned, in_progress, completed
+  notes           String?
+
+  // Shareable link for editors
+  shareId         String   @unique @default(uuid())
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  @@index([scriptId])
+  @@index([shareId])
+  @@index([status])
+  @@index([editorId])
+}
+
+model Editor {
+  id          String   @id @default(uuid())
+  name        String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  briefs      Brief[]
+
+  @@index([name])
+}
+
+model Idea {
+  id                 String   @id @default(uuid())
+  content            String
+  type               String   @default("ad_concept") // 'format' or 'ad_concept'
+
+  projectId          String?
+  convertedToScriptId String?
+
+  metadata           String?  @default("{}")
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  deletedAt          DateTime?
+
+  project            Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([type])
+}

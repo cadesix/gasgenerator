@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/cade/Desktop/gen-ad-scripts/app/share/%5BshareId%5D/layout.tsx"],"sourcesContent":["import type { Metadata } from 'next'\nimport { Inter } from 'next/font/google'\nimport '../../globals.css'\n\nconst inter = Inter({ subsets: ['latin'] })\n\nexport const metadata: Metadata = {\n  title: 'Shared Script',\n  description: 'View shared ad script',\n}\n\nexport default function ShareLayout({\n  children,\n}: {\n  children: React.ReactNode\n}) {\n  return (\n    <html lang=\"en\">\n      <body className={inter.className}>\n        <div className=\"min-h-screen bg-neutral-50\">\n          {children}\n        </div>\n      </body>\n    </html>\n  )\n}\n"],"names":[],"mappings":";;;;;;;;;;;AAMO,MAAM,WAAqB;IAChC,OAAO;IACP,aAAa;AACf;AAEe,SAAS,YAAY,EAClC,QAAQ,EAGT;IACC,qBACE,8OAAC;QAAK,MAAK;kBACT,cAAA,8OAAC;YAAK,WAAW,oJAAK,CAAC,SAAS;sBAC9B,cAAA,8OAAC;gBAAI,WAAU;0BACZ;;;;;;;;;;;;;;;;AAKX"}}]
+}
