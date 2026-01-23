@@ -58,6 +58,8 @@ if ("TURBOPACK compile-time truthy", 1) globalForPrisma.prisma = prisma;
 "use strict";
 
 __turbopack_context__.s([
+    "GET",
+    ()=>GET,
     "POST",
     ()=>POST
 ]);
@@ -65,6 +67,34 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$serv
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/db/prisma.ts [app-route] (ecmascript)");
 ;
 ;
+async function GET() {
+    try {
+        const projects = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].project.findMany({
+            where: {
+                deletedAt: null
+            },
+            include: {
+                _count: {
+                    select: {
+                        formats: true,
+                        savedScripts: true
+                    }
+                }
+            },
+            orderBy: {
+                name: 'asc'
+            }
+        });
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(projects);
+    } catch (error) {
+        console.error('Error fetching projects:', error);
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            error: 'Failed to fetch projects'
+        }, {
+            status: 500
+        });
+    }
+}
 async function POST(request) {
     try {
         const body = await request.json();

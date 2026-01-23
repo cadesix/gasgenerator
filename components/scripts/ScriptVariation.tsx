@@ -99,9 +99,9 @@ export function ScriptVariation({
 
   return (
     <>
-      <Card className="h-full">
+      <Card className="h-full" padding="lg">
         <div className="flex flex-col h-full">
-          <div className="flex-1 space-y-4">
+          <div className="flex-1 space-y-6">
             {sections.map((section) => (
               <div key={section}>
                 <h4 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">
@@ -115,7 +115,7 @@ export function ScriptVariation({
           </div>
 
           {showRepromptInput && (
-            <div className="pt-4 space-y-2">
+            <div className="pt-6 space-y-2">
               <input
                 type="text"
                 value={repromptContext}
@@ -150,19 +150,29 @@ export function ScriptVariation({
             </div>
           )}
 
-          <div className="flex gap-4 justify-end pt-4 mt-auto border-t border-neutral-200">
+          <div className="flex gap-4 justify-end pt-6 mt-auto">
             <button
               onClick={() => setIsSaveModalOpen(true)}
-              className="text-sm text-neutral-900 hover:text-neutral-600"
+              className="text-neutral-600 hover:text-neutral-900 transition-colors"
+              title="Save"
             >
-              Save
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                <polyline points="17 21 17 13 7 13 7 21"/>
+                <polyline points="7 3 7 8 15 8"/>
+              </svg>
             </button>
             <button
               onClick={() => setShowRepromptInput(!showRepromptInput)}
-              className="text-sm text-neutral-900 hover:text-neutral-600"
+              className="text-neutral-600 hover:text-neutral-900 transition-colors disabled:opacity-50"
               disabled={isReprompting}
+              title="Reprompt"
             >
-              Reprompt
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 4 23 10 17 10"/>
+                <polyline points="1 20 1 14 7 14"/>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+              </svg>
             </button>
           </div>
         </div>

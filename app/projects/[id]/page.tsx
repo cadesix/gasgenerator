@@ -1,15 +1,17 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/db/prisma'
-import { ProjectActions } from '@/components/projects/ProjectActions'
-import { ProjectDetail } from '@/components/projects/ProjectDetail'
+import { ProjectForm } from '@/components/projects/ProjectForm'
 
-export default async function ProjectDetailPage({
+export default async function EditProjectPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const project = await prisma.project.findUnique({
-    where: { id: (await params).id, deletedAt: null },
+  const project = await prisma.project.findFirst({
+    where: {
+      id: (await params).id,
+      deletedAt: null
+    },
   })
 
   if (!project) {
@@ -17,15 +19,13 @@ export default async function ProjectDetailPage({
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-between items-start mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900">
-          {project.name}
-        </h1>
-        <ProjectActions projectId={project.id} />
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-neutral-900">{project.name}</h1>
+        <p className="mt-2 text-neutral-600">Edit app details</p>
       </div>
 
-      <ProjectDetail project={project} />
+      <ProjectForm project={project} />
     </div>
   )
 }

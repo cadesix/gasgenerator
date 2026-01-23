@@ -87,9 +87,16 @@ function getSections(format) {
         ];
     }
 }
-async function generateScripts({ project, format, batchInstructions }) {
+async function generateScripts({ project, format, batchInstructions, mechanisms = [] }) {
     const sections = getSections(format);
-    const prompt = buildPrompt(project, format, sections, batchInstructions);
+    const prompt = buildPrompt(project, format, sections, batchInstructions, mechanisms);
+    // Log the full prompt for debugging
+    console.log('\n=== CLAUDE API CALL ===');
+    console.log('Model: claude-sonnet-4-20250514');
+    console.log('Max Tokens: 4000');
+    console.log('\n--- PROMPT START ---');
+    console.log(prompt);
+    console.log('--- PROMPT END ---\n');
     const response = await client.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 4000,
@@ -104,6 +111,11 @@ async function generateScripts({ project, format, batchInstructions }) {
     if (content.type !== 'text') {
         throw new Error('Unexpected response type from Claude');
     }
+    // Log the response
+    console.log('\n--- RESPONSE START ---');
+    console.log(content.text);
+    console.log('--- RESPONSE END ---');
+    console.log('\n=== END CLAUDE API CALL ===\n');
     return parseScriptResponse(content.text, sections);
 }
 async function repromptScript({ project, format, currentContent, batchInstructions, repromptContext }) {
@@ -141,6 +153,13 @@ Return ONLY a JSON object with this structure:
 }
 
 No preamble, just the JSON object.`;
+    // Log the reprompt call
+    console.log('\n=== CLAUDE REPROMPT API CALL ===');
+    console.log('Model: claude-sonnet-4-20250514');
+    console.log('Max Tokens: 2000');
+    console.log('\n--- PROMPT START ---');
+    console.log(prompt);
+    console.log('--- PROMPT END ---\n');
     const response = await client.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 2000,
@@ -155,6 +174,11 @@ No preamble, just the JSON object.`;
     if (content.type !== 'text') {
         throw new Error('Unexpected response type from Claude');
     }
+    // Log the response
+    console.log('\n--- RESPONSE START ---');
+    console.log(content.text);
+    console.log('--- RESPONSE END ---');
+    console.log('\n=== END CLAUDE REPROMPT API CALL ===\n');
     try {
         const cleaned = content.text.replace(/```json|```/g, '').trim();
         const parsed = JSON.parse(cleaned);
@@ -165,21 +189,24 @@ No preamble, just the JSON object.`;
         throw new Error('Failed to parse AI response. Please try again.');
     }
 }
-function buildPrompt(project, format, sections, batchInstructions) {
+function buildPrompt(project, format, sections, batchInstructions, mechanisms = []) {
     const examples = JSON.parse(project.examples);
     const formatExamples = format ? JSON.parse(format.examples) : [];
     const projectContext = `App: ${project.name}
 Description: ${project.description}
 Target Audience: ${project.targetAudience}
 ${examples.length > 0 ? `\nExample scripts:\n${examples.join('\n\n')}` : ''}`;
+    const mechanismsContext = mechanisms.length > 0 ? `\n\nCopywriting Principles/Mechanisms to Apply:
+${mechanisms.map((m)=>`### ${m.title}\n${m.content}`).join('\n\n')}\n` : '';
     const sectionsDescription = sections.map((section, idx)=>`${idx + 1}. ${section.toUpperCase()}`).join('\n');
     const sectionsStructure = sections.map((s)=>`"${s}": "text here"`).join(',\n    ');
-    return `You are a social media ad copywriter creating Instagram ad scripts.
+    return `You are a direct response ad copywriter creating Instagram/Facebook video ad scripts.
 
 App Context:
 ${projectContext}
 
 ${format ? `Format: ${format.structure}\nVisual Context: ${format.visualDescription}\n${formatExamples.length > 0 ? `\nFormat Example Scripts:\n${formatExamples.join('\n\n')}\n` : ''}` : ''}
+${mechanismsContext}
 ${batchInstructions ? `Additional Context for this batch:\n${batchInstructions}\n` : ''}
 
 Generate 10 COMPLETELY DIFFERENT ad scripts. Each script should have these sections:
@@ -191,6 +218,7 @@ Make the scripts diverse:
 - Different angles appropriate for this app and audience
 - Different tones that match the demographic
 - Different formats (questions, statements, storytelling, reveals)
+${mechanisms.length > 0 ? '- Apply the copywriting principles/mechanisms provided above where relevant' : ''}
 
 Return ONLY a JSON array with this structure:
 [
@@ -239,7 +267,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$ai$2f$claude$2e$ts__$
 async function POST(request) {
     try {
         const body = await request.json();
-        const { projectId, formatId, batchInstructions } = body;
+        const { projectId, formatId, batchInstructions, mechanismIds } = body;
         // Fetch project
         const project = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].project.findFirst({
             where: {
@@ -264,11 +292,24 @@ async function POST(request) {
                 }
             });
         }
+        // Fetch mechanisms if provided
+        let mechanisms = [];
+        if (mechanismIds && mechanismIds.length > 0) {
+            mechanisms = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].mechanism.findMany({
+                where: {
+                    id: {
+                        in: mechanismIds
+                    },
+                    deletedAt: null
+                }
+            });
+        }
         // Generate scripts using Claude
         const scripts = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$ai$2f$claude$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["generateScripts"])({
             project,
             format,
-            batchInstructions
+            batchInstructions,
+            mechanisms
         });
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             scripts

@@ -50,14 +50,8 @@ export function HeaderNav() {
 
           <div className="flex items-center">
             <OverflowMenu>
-              <Link href="/projects">
-                <OverflowMenuItem>Edit Apps</OverflowMenuItem>
-              </Link>
-              <Link href="/formats">
-                <OverflowMenuItem>Edit Formats</OverflowMenuItem>
-              </Link>
-              <Link href="/editors-manage">
-                <OverflowMenuItem>Edit Editors</OverflowMenuItem>
+              <Link href="/settings">
+                <OverflowMenuItem>Settings</OverflowMenuItem>
               </Link>
             </OverflowMenu>
           </div>

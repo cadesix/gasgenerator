@@ -58,6 +58,8 @@ if ("TURBOPACK compile-time truthy", 1) globalForPrisma.prisma = prisma;
 "use strict";
 
 __turbopack_context__.s([
+    "GET",
+    ()=>GET,
     "POST",
     ()=>POST
 ]);
@@ -65,10 +67,35 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$serv
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/db/prisma.ts [app-route] (ecmascript)");
 ;
 ;
+async function GET() {
+    try {
+        const formats = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].scriptFormat.findMany({
+            where: {
+                deletedAt: null
+            },
+            orderBy: [
+                {
+                    isGlobal: 'desc'
+                },
+                {
+                    name: 'asc'
+                }
+            ]
+        });
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(formats);
+    } catch (error) {
+        console.error('Error fetching formats:', error);
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            error: 'Failed to fetch formats'
+        }, {
+            status: 500
+        });
+    }
+}
 async function POST(request) {
     try {
         const body = await request.json();
-        const { name, structure, visualDescription, isGlobal, projectId, examples, sections } = body;
+        const { name, structure, visualDescription, isGlobal, projectId, examples, sections, referenceVideos, footageLinks, notes } = body;
         const format = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].scriptFormat.create({
             data: {
                 name,
@@ -77,7 +104,10 @@ async function POST(request) {
                 isGlobal,
                 projectId: isGlobal ? null : projectId,
                 examples: examples || '[]',
-                sections: sections || '["hook","body"]'
+                sections: sections || '["hook","body"]',
+                referenceVideos: referenceVideos || '[]',
+                footageLinks: footageLinks || '[]',
+                notes: notes || null
             }
         });
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(format);

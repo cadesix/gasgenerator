@@ -1,60 +1,56 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Input } from '@/components/ui/Input'
-import { Textarea } from '@/components/ui/Textarea'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
+import { Input } from '@/components/ui/Input'
+import { Textarea } from '@/components/ui/Textarea'
+import { Project } from '@prisma/client'
 
 interface ProjectFormProps {
-  initialData?: {
-    id: string
-    name: string
-    description: string
-    targetAudience: string
-    examples: string
-  }
-  isEditing?: boolean
+  project?: Project
 }
 
-export function ProjectForm({ initialData, isEditing = false }: ProjectFormProps) {
+export function ProjectForm({ project }: ProjectFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
-    name: initialData?.name || '',
-    description: initialData?.description || '',
-    targetAudience: initialData?.targetAudience || '',
+    name: project?.name || '',
+    description: project?.description || '',
+    targetAudience: project?.targetAudience || '',
   })
-  const [examples, setExamples] = useState<string[]>(
-    initialData ? JSON.parse(initialData.examples) : ['']
-  )
 
-  const handleSubmit = async (e: FormEvent) => {
+  const isEditing = !!project
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!formData.name.trim()) {
+      alert('Please enter a name')
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      const filteredExamples = examples.filter(ex => ex.trim().length > 0)
-
-      const payload = {
-        ...formData,
-        examples: JSON.stringify(filteredExamples),
-      }
-
-      const url = isEditing ? `/api/projects/${initialData?.id}` : '/api/projects'
-      const method = isEditing ? 'PUT' : 'POST'
+      const url = isEditing ? `/api/projects/${project.id}` : '/api/projects'
+      const method = isEditing ? 'PATCH' : 'POST'
 
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          description: formData.description.trim(),
+          targetAudience: formData.targetAudience.trim(),
+          ...(isEditing ? {} : { examples: '[]' }),
+        }),
       })
 
       if (!response.ok) throw new Error('Failed to save project')
 
-      const project = await response.json()
-      router.push(`/projects/${project.id}`)
+      router.push('/settings')
       router.refresh()
     } catch (error) {
       console.error('Error saving project:', error)
@@ -62,20 +58,6 @@ export function ProjectForm({ initialData, isEditing = false }: ProjectFormProps
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const handleExampleChange = (index: number, value: string) => {
-    const newExamples = [...examples]
-    newExamples[index] = value
-    setExamples(newExamples)
-  }
-
-  const addExample = () => {
-    setExamples([...examples, ''])
-  }
-
-  const removeExample = (index: number) => {
-    setExamples(examples.filter((_, i) => i !== index))
   }
 
   return (
@@ -87,61 +69,26 @@ export function ProjectForm({ initialData, isEditing = false }: ProjectFormProps
             required
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            placeholder="e.g., Fitness Tracker"
           />
 
           <Textarea
             label="Description"
             required
-            rows={3}
+            rows={16}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            placeholder="Describe what your app does"
           />
 
           <Textarea
             label="Target Audience"
             required
-            rows={2}
+            rows={3}
             value={formData.targetAudience}
-            onChange={(e) =>
-              setFormData({ ...formData, targetAudience: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value })}
+            placeholder="Who is this app for?"
           />
-
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-neutral-700">
-                Example Scripts (Optional)
-              </label>
-              <button
-                type="button"
-                onClick={addExample}
-                className="text-sm text-neutral-900 hover:text-neutral-600"
-              >
-                + Add Example
-              </button>
-            </div>
-            <div className="space-y-3">
-              {examples.map((example, index) => (
-                <div key={index} className="flex gap-2">
-                  <textarea
-                    value={example}
-                    onChange={(e) => handleExampleChange(index, e.target.value)}
-                    rows={3}
-                    className="flex-1 px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
-                  />
-                  {examples.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeExample(index)}
-                      className="text-sm text-neutral-600 hover:text-neutral-900"
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
 
           <div className="flex gap-3">
             <Button type="submit" isLoading={isLoading}>

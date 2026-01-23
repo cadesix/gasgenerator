@@ -15,9 +15,14 @@ export default async function HomePage() {
     ],
   })
 
+  const mechanisms = await prisma.mechanism.findMany({
+    where: { deletedAt: null },
+    orderBy: { title: 'asc' },
+  })
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <HomeScriptGenerator projects={projects} formats={formats} />
+      <HomeScriptGenerator projects={projects} formats={formats} mechanisms={mechanisms} />
     </div>
   )
 }

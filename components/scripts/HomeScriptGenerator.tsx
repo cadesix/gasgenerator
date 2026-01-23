@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { Project, ScriptFormat } from '@prisma/client'
+import { Project, ScriptFormat, Mechanism } from '@prisma/client'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { ScriptVariation } from '@/components/scripts/ScriptVariation'
@@ -9,6 +9,7 @@ import { ScriptVariation } from '@/components/scripts/ScriptVariation'
 interface HomeScriptGeneratorProps {
   projects: Project[]
   formats: ScriptFormat[]
+  mechanisms: Mechanism[]
 }
 
 interface GeneratedScript {
@@ -20,14 +21,16 @@ interface PersistedState {
   selectedProjectId: string
   selectedFormatId: string
   batchInstructions: string
+  selectedMechanismIds: string[]
 }
 
 const STORAGE_KEY = 'gas-generated-scripts'
 
-export function HomeScriptGenerator({ projects, formats }: HomeScriptGeneratorProps) {
+export function HomeScriptGenerator({ projects, formats, mechanisms }: HomeScriptGeneratorProps) {
   const [selectedProjectId, setSelectedProjectId] = useState(projects[0]?.id || '')
   const [selectedFormatId, setSelectedFormatId] = useState('')
   const [batchInstructions, setBatchInstructions] = useState('')
+  const [selectedMechanismIds, setSelectedMechanismIds] = useState<string[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
   const [scripts, setScripts] = useState<GeneratedScript[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -43,6 +46,7 @@ export function HomeScriptGenerator({ projects, formats }: HomeScriptGeneratorPr
         setSelectedProjectId(persisted.selectedProjectId || projects[0]?.id || '')
         setSelectedFormatId(persisted.selectedFormatId || '')
         setBatchInstructions(persisted.batchInstructions || '')
+        setSelectedMechanismIds(persisted.selectedMechanismIds || [])
       }
     } catch (error) {
       console.error('Failed to load persisted scripts:', error)
@@ -60,12 +64,13 @@ export function HomeScriptGenerator({ projects, formats }: HomeScriptGeneratorPr
         selectedProjectId,
         selectedFormatId,
         batchInstructions,
+        selectedMechanismIds,
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
     } catch (error) {
       console.error('Failed to persist scripts:', error)
     }
-  }, [scripts, selectedProjectId, selectedFormatId, batchInstructions, isLoaded])
+  }, [scripts, selectedProjectId, selectedFormatId, batchInstructions, selectedMechanismIds, isLoaded])
 
   // Filter formats based on selected project (global + project-specific)
   const availableFormats = useMemo(() => {
@@ -94,6 +99,7 @@ export function HomeScriptGenerator({ projects, formats }: HomeScriptGeneratorPr
           projectId: selectedProjectId,
           formatId: selectedFormatId || undefined,
           batchInstructions: batchInstructions.trim() || undefined,
+          mechanismIds: selectedMechanismIds.length > 0 ? selectedMechanismIds : undefined,
         }),
       })
 
@@ -110,6 +116,14 @@ export function HomeScriptGenerator({ projects, formats }: HomeScriptGeneratorPr
     } finally {
       setIsGenerating(false)
     }
+  }
+
+  const toggleMechanism = (mechanismId: string) => {
+    setSelectedMechanismIds(prev =>
+      prev.includes(mechanismId)
+        ? prev.filter(id => id !== mechanismId)
+        : [...prev, mechanismId]
+    )
   }
 
   const handleUpdateScript = (index: number, updates: Partial<GeneratedScript>) => {
@@ -168,6 +182,30 @@ export function HomeScriptGenerator({ projects, formats }: HomeScriptGeneratorPr
               Generate Scripts
             </Button>
           </div>
+
+          {mechanisms.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                Mechanisms (Optional)
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {mechanisms.map((mechanism) => (
+                  <button
+                    key={mechanism.id}
+                    type="button"
+                    onClick={() => toggleMechanism(mechanism.id)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      selectedMechanismIds.includes(mechanism.id)
+                        ? 'bg-neutral-900 text-white'
+                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                    }`}
+                  >
+                    {mechanism.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">

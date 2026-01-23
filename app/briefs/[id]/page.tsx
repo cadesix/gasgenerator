@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db/prisma'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { BriefDetailActions } from '@/components/briefs/BriefDetailActions'
+import { BriefNotes } from '@/components/briefs/BriefNotes'
 
 export default async function BriefDetailPage({
   params,
@@ -133,14 +134,7 @@ export default async function BriefDetailPage({
         )}
 
         {/* Brief Notes */}
-        {brief.notes && (
-          <Card>
-            <h2 className="text-xl font-semibold text-neutral-900 mb-4">
-              Notes
-            </h2>
-            <p className="text-sm text-neutral-700 whitespace-pre-wrap">{brief.notes}</p>
-          </Card>
-        )}
+        <BriefNotes briefId={brief.id} initialNotes={brief.notes} />
       </div>
     </div>
   )

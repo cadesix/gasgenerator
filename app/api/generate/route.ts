@@ -5,7 +5,7 @@ import { generateScripts } from '@/lib/ai/claude'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { projectId, formatId, batchInstructions } = body
+    const { projectId, formatId, batchInstructions, mechanismIds } = body
 
     // Fetch project
     const project = await prisma.project.findFirst({
@@ -33,11 +33,23 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Fetch mechanisms if provided
+    let mechanisms = []
+    if (mechanismIds && mechanismIds.length > 0) {
+      mechanisms = await prisma.mechanism.findMany({
+        where: {
+          id: { in: mechanismIds },
+          deletedAt: null
+        },
+      })
+    }
+
     // Generate scripts using Claude
     const scripts = await generateScripts({
       project,
       format,
       batchInstructions,
+      mechanisms,
     })
 
     return NextResponse.json({ scripts })

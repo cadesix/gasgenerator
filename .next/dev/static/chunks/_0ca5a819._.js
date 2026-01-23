@@ -133,7 +133,7 @@ function Input({ label, error, helperText, className = '', id, ...props }) {
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                 id: inputId,
-                className: `block w-full px-3 py-2 border shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 sm:text-sm ${error ? 'border-neutral-900 focus:ring-neutral-900 focus:border-neutral-900' : 'border-neutral-300'}`,
+                className: `block w-full px-3 py-2 border shadow-sm bg-white text-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 sm:text-sm ${error ? 'border-neutral-900 focus:ring-neutral-900 focus:border-neutral-900' : 'border-neutral-300'}`,
                 ...props
             }, void 0, false, {
                 fileName: "[project]/components/ui/Input.tsx",
@@ -404,11 +404,12 @@ function ScriptVariation({ index, content, projectId, formatId, batchInstruction
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
                 className: "h-full",
+                padding: "lg",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "flex flex-col h-full",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex-1 space-y-4",
+                            className: "flex-1 space-y-6",
                             children: sections.map((section)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -439,7 +440,7 @@ function ScriptVariation({ index, content, projectId, formatId, batchInstruction
                             columnNumber: 11
                         }, this),
                         showRepromptInput && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "pt-4 space-y-2",
+                            className: "pt-6 space-y-2",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                     type: "text",
@@ -496,12 +497,50 @@ function ScriptVariation({ index, content, projectId, formatId, batchInstruction
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex gap-4 justify-end pt-4 mt-auto border-t border-neutral-200",
+                            className: "flex gap-4 justify-end pt-6 mt-auto",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                     onClick: ()=>setIsSaveModalOpen(true),
-                                    className: "text-sm text-neutral-900 hover:text-neutral-600",
-                                    children: "Save"
+                                    className: "text-neutral-600 hover:text-neutral-900 transition-colors",
+                                    title: "Save",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
+                                        xmlns: "http://www.w3.org/2000/svg",
+                                        width: "18",
+                                        height: "18",
+                                        viewBox: "0 0 24 24",
+                                        fill: "none",
+                                        stroke: "currentColor",
+                                        strokeWidth: "2",
+                                        strokeLinecap: "round",
+                                        strokeLinejoin: "round",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
+                                                d: "M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/scripts/ScriptVariation.tsx",
+                                                lineNumber: 160,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("polyline", {
+                                                points: "17 21 17 13 7 13 7 21"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/scripts/ScriptVariation.tsx",
+                                                lineNumber: 161,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("polyline", {
+                                                points: "7 3 7 8 15 8"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/scripts/ScriptVariation.tsx",
+                                                lineNumber: 162,
+                                                columnNumber: 17
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/scripts/ScriptVariation.tsx",
+                                        lineNumber: 159,
+                                        columnNumber: 15
+                                    }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/scripts/ScriptVariation.tsx",
                                     lineNumber: 154,
@@ -509,12 +548,50 @@ function ScriptVariation({ index, content, projectId, formatId, batchInstruction
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                     onClick: ()=>setShowRepromptInput(!showRepromptInput),
-                                    className: "text-sm text-neutral-900 hover:text-neutral-600",
+                                    className: "text-neutral-600 hover:text-neutral-900 transition-colors disabled:opacity-50",
                                     disabled: isReprompting,
-                                    children: "Reprompt"
+                                    title: "Reprompt",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
+                                        xmlns: "http://www.w3.org/2000/svg",
+                                        width: "18",
+                                        height: "18",
+                                        viewBox: "0 0 24 24",
+                                        fill: "none",
+                                        stroke: "currentColor",
+                                        strokeWidth: "2",
+                                        strokeLinecap: "round",
+                                        strokeLinejoin: "round",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("polyline", {
+                                                points: "23 4 23 10 17 10"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/scripts/ScriptVariation.tsx",
+                                                lineNumber: 172,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("polyline", {
+                                                points: "1 20 1 14 7 14"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/scripts/ScriptVariation.tsx",
+                                                lineNumber: 173,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
+                                                d: "M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/scripts/ScriptVariation.tsx",
+                                                lineNumber: 174,
+                                                columnNumber: 17
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/scripts/ScriptVariation.tsx",
+                                        lineNumber: 171,
+                                        columnNumber: 15
+                                    }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/scripts/ScriptVariation.tsx",
-                                    lineNumber: 160,
+                                    lineNumber: 165,
                                     columnNumber: 13
                                 }, this)
                             ]
@@ -548,7 +625,7 @@ function ScriptVariation({ index, content, projectId, formatId, batchInstruction
                             placeholder: "Enter a title for this script"
                         }, void 0, false, {
                             fileName: "[project]/components/scripts/ScriptVariation.tsx",
-                            lineNumber: 177,
+                            lineNumber: 187,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -560,7 +637,7 @@ function ScriptVariation({ index, content, projectId, formatId, batchInstruction
                                     children: "Cancel"
                                 }, void 0, false, {
                                     fileName: "[project]/components/scripts/ScriptVariation.tsx",
-                                    lineNumber: 184,
+                                    lineNumber: 194,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -569,24 +646,24 @@ function ScriptVariation({ index, content, projectId, formatId, batchInstruction
                                     children: "Save Script"
                                 }, void 0, false, {
                                     fileName: "[project]/components/scripts/ScriptVariation.tsx",
-                                    lineNumber: 187,
+                                    lineNumber: 197,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/scripts/ScriptVariation.tsx",
-                            lineNumber: 183,
+                            lineNumber: 193,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/scripts/ScriptVariation.tsx",
-                    lineNumber: 176,
+                    lineNumber: 186,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/scripts/ScriptVariation.tsx",
-                lineNumber: 171,
+                lineNumber: 181,
                 columnNumber: 7
             }, this)
         ]
@@ -624,11 +701,12 @@ var _s = __turbopack_context__.k.signature();
 ;
 ;
 const STORAGE_KEY = 'gas-generated-scripts';
-function HomeScriptGenerator({ projects, formats }) {
+function HomeScriptGenerator({ projects, formats, mechanisms }) {
     _s();
     const [selectedProjectId, setSelectedProjectId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(projects[0]?.id || '');
     const [selectedFormatId, setSelectedFormatId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
     const [batchInstructions, setBatchInstructions] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
+    const [selectedMechanismIds, setSelectedMechanismIds] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [isGenerating, setIsGenerating] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [scripts, setScripts] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
@@ -644,6 +722,7 @@ function HomeScriptGenerator({ projects, formats }) {
                     setSelectedProjectId(persisted.selectedProjectId || projects[0]?.id || '');
                     setSelectedFormatId(persisted.selectedFormatId || '');
                     setBatchInstructions(persisted.batchInstructions || '');
+                    setSelectedMechanismIds(persisted.selectedMechanismIds || []);
                 }
             } catch (error) {
                 console.error('Failed to load persisted scripts:', error);
@@ -662,7 +741,8 @@ function HomeScriptGenerator({ projects, formats }) {
                     scripts,
                     selectedProjectId,
                     selectedFormatId,
-                    batchInstructions
+                    batchInstructions,
+                    selectedMechanismIds
                 };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
             } catch (error) {
@@ -674,6 +754,7 @@ function HomeScriptGenerator({ projects, formats }) {
         selectedProjectId,
         selectedFormatId,
         batchInstructions,
+        selectedMechanismIds,
         isLoaded
     ]);
     // Filter formats based on selected project (global + project-specific)
@@ -706,7 +787,8 @@ function HomeScriptGenerator({ projects, formats }) {
                 body: JSON.stringify({
                     projectId: selectedProjectId,
                     formatId: selectedFormatId || undefined,
-                    batchInstructions: batchInstructions.trim() || undefined
+                    batchInstructions: batchInstructions.trim() || undefined,
+                    mechanismIds: selectedMechanismIds.length > 0 ? selectedMechanismIds : undefined
                 })
             });
             if (!response.ok) {
@@ -721,6 +803,12 @@ function HomeScriptGenerator({ projects, formats }) {
         } finally{
             setIsGenerating(false);
         }
+    };
+    const toggleMechanism = (mechanismId)=>{
+        setSelectedMechanismIds((prev)=>prev.includes(mechanismId) ? prev.filter((id)=>id !== mechanismId) : [
+                ...prev,
+                mechanismId
+            ]);
     };
     const handleUpdateScript = (index, updates)=>{
         setScripts((prev)=>prev.map((script, i)=>i === index ? {
@@ -745,7 +833,7 @@ function HomeScriptGenerator({ projects, formats }) {
                                         children: "No projects available"
                                     }, void 0, false, {
                                         fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                                        lineNumber: 128,
+                                        lineNumber: 142,
                                         columnNumber: 17
                                     }, this) : projects.map((project)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                             onClick: ()=>{
@@ -756,12 +844,12 @@ function HomeScriptGenerator({ projects, formats }) {
                                             children: project.name
                                         }, project.id, false, {
                                             fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                                            lineNumber: 131,
+                                            lineNumber: 145,
                                             columnNumber: 19
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                                    lineNumber: 126,
+                                    lineNumber: 140,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -775,7 +863,7 @@ function HomeScriptGenerator({ projects, formats }) {
                                             children: "No specific format"
                                         }, void 0, false, {
                                             fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                                            lineNumber: 155,
+                                            lineNumber: 169,
                                             columnNumber: 15
                                         }, this),
                                         availableFormats.map((format)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -787,13 +875,13 @@ function HomeScriptGenerator({ projects, formats }) {
                                                 ]
                                             }, format.id, true, {
                                                 fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                                                lineNumber: 157,
+                                                lineNumber: 171,
                                                 columnNumber: 17
                                             }, this))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                                    lineNumber: 149,
+                                    lineNumber: 163,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -803,14 +891,47 @@ function HomeScriptGenerator({ projects, formats }) {
                                     children: "Generate Scripts"
                                 }, void 0, false, {
                                     fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                                    lineNumber: 163,
+                                    lineNumber: 177,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                            lineNumber: 125,
+                            lineNumber: 139,
                             columnNumber: 11
+                        }, this),
+                        mechanisms.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                    className: "block text-sm font-medium text-neutral-700 mb-2",
+                                    children: "Mechanisms (Optional)"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
+                                    lineNumber: 188,
+                                    columnNumber: 15
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex flex-wrap gap-2",
+                                    children: mechanisms.map((mechanism)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                            type: "button",
+                                            onClick: ()=>toggleMechanism(mechanism.id),
+                                            className: `px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${selectedMechanismIds.includes(mechanism.id) ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'}`,
+                                            children: mechanism.title
+                                        }, mechanism.id, false, {
+                                            fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
+                                            lineNumber: 193,
+                                            columnNumber: 19
+                                        }, this))
+                                }, void 0, false, {
+                                    fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
+                                    lineNumber: 191,
+                                    columnNumber: 15
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
+                            lineNumber: 187,
+                            columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             children: [
@@ -819,7 +940,7 @@ function HomeScriptGenerator({ projects, formats }) {
                                     children: "Batch Instructions (Optional)"
                                 }, void 0, false, {
                                     fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                                    lineNumber: 173,
+                                    lineNumber: 211,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -830,13 +951,13 @@ function HomeScriptGenerator({ projects, formats }) {
                                     className: "block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm resize-none"
                                 }, void 0, false, {
                                     fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                                    lineNumber: 176,
+                                    lineNumber: 214,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                            lineNumber: 172,
+                            lineNumber: 210,
                             columnNumber: 11
                         }, this),
                         error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -846,23 +967,23 @@ function HomeScriptGenerator({ projects, formats }) {
                                 children: error
                             }, void 0, false, {
                                 fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                                lineNumber: 187,
+                                lineNumber: 225,
                                 columnNumber: 15
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                            lineNumber: 186,
+                            lineNumber: 224,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                    lineNumber: 124,
+                    lineNumber: 138,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                lineNumber: 123,
+                lineNumber: 137,
                 columnNumber: 7
             }, this),
             scripts.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -872,7 +993,7 @@ function HomeScriptGenerator({ projects, formats }) {
                         children: "Generated Variations"
                     }, void 0, false, {
                         fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                        lineNumber: 195,
+                        lineNumber: 233,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -886,28 +1007,28 @@ function HomeScriptGenerator({ projects, formats }) {
                                 onUpdate: (updates)=>handleUpdateScript(index, updates)
                             }, index, false, {
                                 fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                                lineNumber: 200,
+                                lineNumber: 238,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                        lineNumber: 198,
+                        lineNumber: 236,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-                lineNumber: 194,
+                lineNumber: 232,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/scripts/HomeScriptGenerator.tsx",
-        lineNumber: 122,
+        lineNumber: 136,
         columnNumber: 5
     }, this);
 }
-_s(HomeScriptGenerator, "lH02dm4COD8HGQ9et/QkOwyqgYk=");
+_s(HomeScriptGenerator, "M4Hhua1zXv6cA2IR98v5qaVW7Ls=");
 _c = HomeScriptGenerator;
 var _c;
 __turbopack_context__.k.register(_c, "HomeScriptGenerator");

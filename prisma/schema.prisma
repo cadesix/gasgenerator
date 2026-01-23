@@ -130,6 +130,18 @@ model Editor {
   @@index([name])
 }
 
+model Mechanism {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@index([title])
+}
+
 model Idea {
   id                 String   @id @default(uuid())
   content            String
