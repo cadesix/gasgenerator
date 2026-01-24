@@ -2,59 +2,52 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { OverflowMenu, OverflowMenuItem } from '@/components/ui/OverflowMenu'
+import { usePathname } from 'next/navigation'
 
 export function HeaderNav() {
-  return (
-    <nav className="border-b border-neutral-200 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex space-x-8">
-            <Link
-              href="/"
-              className="inline-flex items-center px-1 pt-1"
-            >
-              <Image
-                src="/images/gastank.png"
-                alt="GAS"
-                width={32}
-                height={32}
-                priority
-              />
-            </Link>
-            <Link
-              href="/scripts"
-              className="inline-flex items-center px-1 pt-1 text-sm font-medium text-neutral-600 hover:text-neutral-900"
-            >
-              Scripts
-            </Link>
-            <Link
-              href="/briefs"
-              className="inline-flex items-center px-1 pt-1 text-sm font-medium text-neutral-600 hover:text-neutral-900"
-            >
-              Briefs
-            </Link>
-            <Link
-              href="/editors"
-              className="inline-flex items-center px-1 pt-1 text-sm font-medium text-neutral-600 hover:text-neutral-900"
-            >
-              Editors
-            </Link>
-            <Link
-              href="/ideas"
-              className="inline-flex items-center px-1 pt-1 text-sm font-medium text-neutral-600 hover:text-neutral-900"
-            >
-              Ideas
-            </Link>
-          </div>
+  const pathname = usePathname()
 
-          <div className="flex items-center">
-            <OverflowMenu>
-              <Link href="/settings">
-                <OverflowMenuItem>Settings</OverflowMenuItem>
-              </Link>
-            </OverflowMenu>
-          </div>
+  const navItems = [
+    { href: '/', label: 'Create' },
+    { href: '/scripts', label: 'Scripts' },
+    { href: '/briefs', label: 'Briefs' },
+    { href: '/editors', label: 'Editors' },
+    { href: '/ideas', label: 'Ideas' },
+    { href: '/settings', label: 'Settings' },
+  ]
+
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === '/'
+    return pathname.startsWith(href)
+  }
+
+  return (
+    <nav className="w-64 h-screen sticky top-0 border-r border-neutral-200 bg-white flex-shrink-0">
+      <div className="flex flex-col h-full py-6">
+        <Link href="/" className="px-6 mb-8 block">
+          <img
+            src="/images/gastank.png"
+            alt="GAS"
+            width={48}
+            height={48}
+            className="block"
+          />
+        </Link>
+
+        <div className="flex-1 px-3 space-y-1">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                isActive(item.href)
+                  ? 'text-[#313131]'
+                  : 'text-[#B3B3B3] hover:text-[#313131]'
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
         </div>
       </div>
     </nav>

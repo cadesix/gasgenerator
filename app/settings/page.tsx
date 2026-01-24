@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 interface Project {
   id: string
@@ -149,165 +150,180 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <PageContainer>
         <div className="text-center py-12">
           <p className="text-neutral-600">Loading settings...</p>
         </div>
-      </div>
+      </PageContainer>
     )
   }
 
   return (
     <>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-neutral-900 mb-8">Settings</h1>
+      <PageContainer>
+        <h1 className="text-[20px] font-bold text-neutral-900 mb-8">Settings</h1>
 
         <div className="space-y-12">
           {/* Apps Section */}
           <section>
-            <div className="flex justify-between items-center mb-4">
-              <div>
+            <div className="mb-4">
+              <div className="flex items-center gap-2">
                 <h2 className="text-2xl font-semibold text-neutral-900">Apps</h2>
-                <p className="text-sm text-neutral-600 mt-1">Manage your apps/projects</p>
+                <button
+                  onClick={() => router.push('/projects/new')}
+                  className="flex items-center justify-center w-6 h-6 rounded-full border border-neutral-300 hover:border-neutral-900 transition-colors"
+                >
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 1V11M1 6H11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                </button>
               </div>
-              <Button onClick={() => router.push('/projects/new')}>Add App</Button>
+              <p className="text-sm text-neutral-600 mt-1">Manage your apps/projects</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {projects.map((project) => (
-                <Card key={project.id}>
-                  <div className="space-y-3">
-                    <h3 className="text-lg font-semibold text-neutral-900">{project.name}</h3>
-                    {project._count && (
-                      <div className="text-sm text-neutral-500 pt-3 border-t border-neutral-200">
-                        {project._count.formats} format{project._count.formats !== 1 ? 's' : ''} · {project._count.savedScripts} script{project._count.savedScripts !== 1 ? 's' : ''}
+                <div key={project.id} onClick={() => router.push(`/projects/${project.id}`)} className="cursor-pointer group">
+                  <Card className="transition-transform duration-200 ease-out group-hover:scale-[1.02] origin-center">
+                    <div className="transition-transform duration-200 ease-out group-hover:scale-[0.9804] origin-center">
+                      <div className="space-y-3">
+                        <h3 className="text-lg font-semibold text-neutral-900">{project.name}</h3>
+                        {project._count && (
+                          <div className="text-sm text-neutral-500 pt-3 border-t border-neutral-200">
+                            {project._count.formats} format{project._count.formats !== 1 ? 's' : ''} · {project._count.savedScripts} script{project._count.savedScripts !== 1 ? 's' : ''}
+                          </div>
+                        )}
                       </div>
-                    )}
-                    <div className="pt-3 border-t border-neutral-200">
-                      <button
-                        onClick={() => router.push(`/projects/${project.id}`)}
-                        className="text-sm text-neutral-900 hover:text-neutral-600"
-                      >
-                        Edit
-                      </button>
-                    </div>
-                  </div>
-                </Card>
+                      </div>
+                  </Card>
+                </div>
               ))}
             </div>
           </section>
 
           {/* Formats Section */}
           <section>
-            <div className="flex justify-between items-center mb-4">
-              <div>
+            <div className="mb-4">
+              <div className="flex items-center gap-2">
                 <h2 className="text-2xl font-semibold text-neutral-900">Formats</h2>
-                <p className="text-sm text-neutral-600 mt-1">Manage script formats</p>
+                <button
+                  onClick={() => router.push('/formats/new')}
+                  className="flex items-center justify-center w-6 h-6 rounded-full border border-neutral-300 hover:border-neutral-900 transition-colors"
+                >
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 1V11M1 6H11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                </button>
               </div>
-              <Button onClick={() => router.push('/formats/new')}>Add Format</Button>
+              <p className="text-sm text-neutral-600 mt-1">Manage script formats</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {formats.map((format) => (
-                <Card key={format.id}>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-lg font-semibold text-neutral-900">{format.name}</h3>
-                      {format.isGlobal ? (
-                        <span className="text-xs bg-neutral-900 text-white px-2 py-1 rounded">Global</span>
-                      ) : (
-                        <span className="text-xs bg-green-600 text-white px-2 py-1 rounded">App-specific</span>
-                      )}
+                <div key={format.id} onClick={() => router.push(`/formats/${format.id}`)} className="cursor-pointer group">
+                  <Card className="transition-transform duration-200 ease-out group-hover:scale-[1.02] origin-center">
+                    <div className="transition-transform duration-200 ease-out group-hover:scale-[0.9804] origin-center">
+                      <div className="space-y-3">
+                      <div className="flex justify-between items-start">
+                        <h3 className="text-lg font-semibold text-neutral-900">{format.name}</h3>
+                        {format.isGlobal ? (
+                          <span className="text-xs bg-neutral-900 text-white px-2 py-1 rounded">Global</span>
+                        ) : (
+                          <span className="text-xs bg-green-600 text-white px-2 py-1 rounded">App-specific</span>
+                        )}
+                      </div>
+                      <p className="text-sm text-neutral-600 line-clamp-2">{format.structure}</p>
+                      </div>
                     </div>
-                    <p className="text-sm text-neutral-600 line-clamp-2">{format.structure}</p>
-                    <div className="pt-3 border-t border-neutral-200">
-                      <button
-                        onClick={() => router.push(`/formats/${format.id}`)}
-                        className="text-sm text-neutral-900 hover:text-neutral-600"
-                      >
-                        Edit
-                      </button>
-                    </div>
-                  </div>
-                </Card>
+                  </Card>
+                </div>
               ))}
             </div>
           </section>
 
           {/* Editors Section */}
           <section>
-            <div className="flex justify-between items-center mb-4">
-              <div>
+            <div className="mb-4">
+              <div className="flex items-center gap-2">
                 <h2 className="text-2xl font-semibold text-neutral-900">Editors</h2>
-                <p className="text-sm text-neutral-600 mt-1">Manage editors who can be assigned to briefs</p>
+                <button
+                  onClick={() => handleOpenEditorModal()}
+                  className="flex items-center justify-center w-6 h-6 rounded-full border border-neutral-300 hover:border-neutral-900 transition-colors"
+                >
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 1V11M1 6H11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                </button>
               </div>
-              <Button onClick={() => handleOpenEditorModal()}>Add Editor</Button>
+              <p className="text-sm text-neutral-600 mt-1">Manage editors who can be assigned to briefs</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {editors.map((editor) => (
-                <Card key={editor.id}>
-                  <div className="space-y-3">
-                    <h3 className="text-lg font-semibold text-neutral-900">{editor.name}</h3>
-                    {editor._count && (
-                      <div className="text-sm text-neutral-500 pt-3 border-t border-neutral-200">
-                        {editor._count.briefs} brief{editor._count.briefs !== 1 ? 's' : ''} assigned
+                <div key={editor.id} onClick={() => handleOpenEditorModal(editor)} className="cursor-pointer group">
+                  <Card className="transition-transform duration-200 ease-out group-hover:scale-[1.02] origin-center">
+                    <div className="transition-transform duration-200 ease-out group-hover:scale-[0.9804] origin-center">
+                      <div className="space-y-3">
+                        <h3 className="text-lg font-semibold text-neutral-900">{editor.name}</h3>
+                        {editor._count && (
+                          <div className="text-sm text-neutral-500 pt-3 border-t border-neutral-200">
+                            {editor._count.briefs} brief{editor._count.briefs !== 1 ? 's' : ''} assigned
+                          </div>
+                        )}
                       </div>
-                    )}
-                    <div className="pt-3 border-t border-neutral-200">
-                      <button
-                        onClick={() => handleOpenEditorModal(editor)}
-                        className="text-sm text-neutral-900 hover:text-neutral-600"
-                      >
-                        Edit
-                      </button>
-                    </div>
-                  </div>
-                </Card>
+                      </div>
+                  </Card>
+                </div>
               ))}
             </div>
           </section>
 
           {/* Mechanisms Section */}
           <section>
-            <div className="flex justify-between items-center mb-4">
-              <div>
+            <div className="mb-4">
+              <div className="flex items-center gap-2">
                 <h2 className="text-2xl font-semibold text-neutral-900">Mechanisms</h2>
-                <p className="text-sm text-neutral-600 mt-1">Copywriting principles to use as context when generating scripts</p>
+                <button
+                  onClick={() => router.push('/mechanisms/new')}
+                  className="flex items-center justify-center w-6 h-6 rounded-full border border-neutral-300 hover:border-neutral-900 transition-colors"
+                >
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 1V11M1 6H11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                </button>
               </div>
-              <Button onClick={() => router.push('/mechanisms/new')}>Add Mechanism</Button>
+              <p className="text-sm text-neutral-600 mt-1">Copywriting principles to use as context when generating scripts</p>
             </div>
 
             <div className="grid grid-cols-1 gap-4">
               {mechanisms.map((mechanism) => (
-                <Card key={mechanism.id}>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-lg font-semibold text-neutral-900">{mechanism.title}</h3>
-                      <div className="flex gap-3">
+                <div key={mechanism.id} onClick={() => router.push(`/mechanisms/${mechanism.id}`)} className="cursor-pointer group">
+                  <Card className="transition-transform duration-200 ease-out group-hover:scale-[1.02] origin-center">
+                    <div className="transition-transform duration-200 ease-out group-hover:scale-[0.9804] origin-center">
+                      <div className="space-y-3">
+                      <div className="flex justify-between items-start">
+                        <h3 className="text-lg font-semibold text-neutral-900">{mechanism.title}</h3>
                         <button
-                          onClick={() => router.push(`/mechanisms/${mechanism.id}`)}
-                          className="text-sm text-neutral-900 hover:text-neutral-600"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteMechanism(mechanism.id)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleDeleteMechanism(mechanism.id)
+                          }}
                           disabled={deletingId === mechanism.id}
                           className="text-sm text-neutral-900 hover:text-neutral-600 disabled:opacity-50"
                         >
                           {deletingId === mechanism.id ? 'Deleting...' : 'Delete'}
                         </button>
                       </div>
+                      <p className="text-sm text-neutral-700 whitespace-pre-wrap line-clamp-3">{mechanism.content}</p>
+                      </div>
                     </div>
-                    <p className="text-sm text-neutral-700 whitespace-pre-wrap line-clamp-3">{mechanism.content}</p>
-                  </div>
-                </Card>
+                  </Card>
+                </div>
               ))}
             </div>
           </section>
         </div>
-      </div>
+      </PageContainer>
 
       {/* Editor Modal */}
       <Modal

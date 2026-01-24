@@ -28,6 +28,9 @@ interface ScriptCardProps {
 export function ScriptCard({ script }: ScriptCardProps) {
   const router = useRouter()
   const [isCreatingBrief, setIsCreatingBrief] = useState(false)
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [title, setTitle] = useState(script.title)
+  const [isSaving, setIsSaving] = useState(false)
 
   // Parse content JSON to get sections
   const content = JSON.parse(script.content) as Record<string, string>
@@ -58,26 +61,83 @@ export function ScriptCard({ script }: ScriptCardProps) {
     }
   }
 
+  const handleSaveTitle = async () => {
+    if (!title.trim() || title === script.title) {
+      setIsEditingTitle(false)
+      setTitle(script.title)
+      return
+    }
+
+    setIsSaving(true)
+
+    try {
+      const response = await fetch(`/api/scripts/${script.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: title.trim() }),
+      })
+
+      if (!response.ok) throw new Error('Failed to update title')
+
+      router.refresh()
+      setIsEditingTitle(false)
+    } catch (error) {
+      console.error('Error updating title:', error)
+      alert('Failed to update title. Please try again.')
+      setTitle(script.title)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   return (
-    <Link href={`/scripts/${script.id}`}>
-      <Card className="hover:border-neutral-900 transition-colors cursor-pointer h-full">
-        <div className="mb-3">
+    <Link href={`/scripts/${script.id}`} className="group">
+      <Card className="cursor-pointer h-full transition-transform duration-200 ease-out group-hover:scale-[1.02] origin-center">
+        <div className="transition-transform duration-200 ease-out group-hover:scale-[0.9804] origin-center">
+          <div className="mb-3">
+          <p className="text-[10px] text-neutral-500 mb-1">{script.project.name}</p>
           <div className="flex items-start justify-between mb-2">
-            <h3 className="text-lg font-semibold text-neutral-900 flex-1">
-              {script.title}
-            </h3>
+            {isEditingTitle ? (
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                onBlur={handleSaveTitle}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSaveTitle()
+                  if (e.key === 'Escape') {
+                    setTitle(script.title)
+                    setIsEditingTitle(false)
+                  }
+                }}
+                onClick={(e) => e.stopPropagation()}
+                disabled={isSaving}
+                autoFocus
+                className="text-lg font-semibold text-neutral-900 flex-1 border-none outline-none bg-transparent"
+              />
+            ) : (
+              <h3
+                className="text-lg font-semibold text-neutral-900 flex-1 cursor-text"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setIsEditingTitle(true)
+                }}
+              >
+                {script.title}
+              </h3>
+            )}
             {script.brief ? (
               <Badge variant="success">Has Brief</Badge>
             ) : (
               <Badge variant="default">No Brief</Badge>
             )}
           </div>
-          <div className="flex gap-2 mb-3">
-            <Badge variant="default">{script.project.name}</Badge>
-            {script.format && (
+          {script.format && (
+            <div className="flex gap-2 mb-3">
               <Badge variant="success">{script.format.name}</Badge>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -93,19 +153,11 @@ export function ScriptCard({ script }: ScriptCardProps) {
           ))}
         </div>
 
-        <div className="mt-4 pt-4 border-t border-neutral-200 flex items-center justify-between">
-          <p className="text-xs text-neutral-500">
-            Saved {new Date(script.savedAt).toLocaleDateString()}
-          </p>
-          {!script.brief && (
-            <button
-              onClick={handleCreateBrief}
-              disabled={isCreatingBrief}
-              className="text-sm text-neutral-900 hover:text-neutral-600 disabled:opacity-50"
-            >
-              {isCreatingBrief ? 'Creating...' : 'Create Brief'}
-            </button>
-          )}
+          <div className="mt-4 pt-4 border-t border-neutral-200">
+            <p className="text-xs text-neutral-500">
+              Saved {new Date(script.savedAt).toLocaleDateString()}
+            </p>
+          </div>
         </div>
       </Card>
     </Link>

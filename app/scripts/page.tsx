@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { prisma } from '@/lib/db/prisma'
 import { Card } from '@/components/ui/Card'
 import { ScriptCard } from '@/components/scripts/ScriptCard'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 interface PageProps {
   searchParams: Promise<{ project?: string }>
@@ -30,14 +31,11 @@ export default async function ScriptsPage({ searchParams }: PageProps) {
   })
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <PageContainer>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+        <h1 className="text-[20px] font-bold text-neutral-900">
           Scripts
         </h1>
-        <p className="text-neutral-600">
-          Your saved ad scripts
-        </p>
       </div>
 
       {projects.length > 0 && (
@@ -46,8 +44,8 @@ export default async function ScriptsPage({ searchParams }: PageProps) {
             <button
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 !params.project
-                  ? 'bg-neutral-900 text-white'
-                  : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                  ? 'bg-[#F0F0F0] text-neutral-900 border border-[#ABABAB]'
+                  : 'bg-[#F0F0F0] text-neutral-700 hover:bg-neutral-200 border border-transparent'
               }`}
             >
               All Apps
@@ -58,8 +56,8 @@ export default async function ScriptsPage({ searchParams }: PageProps) {
               <button
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   params.project === project.id
-                    ? 'bg-neutral-900 text-white'
-                    : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                    ? 'bg-[#F0F0F0] text-neutral-900 border border-[#ABABAB]'
+                    : 'bg-[#F0F0F0] text-neutral-700 hover:bg-neutral-200 border border-transparent'
                 }`}
               >
                 {project.name}
@@ -86,12 +84,12 @@ export default async function ScriptsPage({ searchParams }: PageProps) {
           </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {scripts.map((script) => (
             <ScriptCard key={script.id} script={script} />
           ))}
         </div>
       )}
-    </div>
+    </PageContainer>
   )
 }

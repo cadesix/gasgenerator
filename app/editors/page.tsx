@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db/prisma'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import Link from 'next/link'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 export default async function EditorsPage() {
   const briefs = await prisma.brief.findMany({
@@ -67,10 +68,9 @@ export default async function EditorsPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <PageContainer>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900 mb-2">Editors</h1>
-        <p className="text-neutral-600">View briefs assigned to each editor</p>
+        <h1 className="text-[20px] font-bold text-neutral-900">Editors</h1>
       </div>
 
       {editors.length === 0 ? (
@@ -122,16 +122,15 @@ export default async function EditorsPage() {
                     const firstSection = Object.keys(content)[0]
 
                     return (
-                      <Link key={brief.id} href={`/briefs/${brief.id}`}>
-                        <Card className="hover:border-neutral-900 transition-colors cursor-pointer">
-                          <div className="space-y-3">
+                      <Link key={brief.id} href={`/briefs/${brief.id}`} className="group">
+                        <Card className="cursor-pointer transition-transform duration-200 ease-out group-hover:scale-[1.02] origin-center">
+                          <div className="transition-transform duration-200 ease-out group-hover:scale-[0.9804] origin-center">
+                            <div className="space-y-3">
                             <div>
+                              <p className="text-[10px] text-neutral-500 mb-1">{brief.script.project.name}</p>
                               <h3 className="text-lg font-semibold text-neutral-900">
                                 {brief.script.title}
                               </h3>
-                              <div className="flex gap-2 mt-2">
-                                <Badge variant="default">{brief.script.project.name}</Badge>
-                              </div>
                             </div>
 
                             {firstSection && (
@@ -149,6 +148,7 @@ export default async function EditorsPage() {
                               </p>
                             </div>
                           </div>
+                          </div>
                         </Card>
                       </Link>
                     )
@@ -159,6 +159,6 @@ export default async function EditorsPage() {
           })}
         </div>
       )}
-    </div>
+    </PageContainer>
   )
 }

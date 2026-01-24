@@ -134,106 +134,105 @@ export function HomeScriptGenerator({ projects, formats, mechanisms }: HomeScrip
 
   return (
     <div className="space-y-8">
-      <Card>
-        <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="flex flex-wrap gap-2">
-              {projects.length === 0 ? (
-                <p className="text-sm text-neutral-500">No projects available</p>
-              ) : (
-                projects.map((project) => (
-                  <button
-                    key={project.id}
-                    onClick={() => {
-                      setSelectedProjectId(project.id)
-                      setSelectedFormatId('') // Reset format when project changes
-                    }}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      selectedProjectId === project.id
-                        ? 'bg-neutral-900 text-white'
-                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-                    }`}
-                  >
-                    {project.name}
-                  </button>
-                ))
-              )}
-            </div>
-
-            <select
-              value={selectedFormatId}
-              onChange={(e) => setSelectedFormatId(e.target.value)}
-              disabled={!selectedProjectId || availableFormats.length === 0}
-              className="px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm disabled:bg-neutral-50 disabled:cursor-not-allowed"
-            >
-              <option value="">No specific format</option>
-              {availableFormats.map((format) => (
-                <option key={format.id} value={format.id}>
-                  {format.name} {format.isGlobal ? '(Global)' : '(Project-specific)'}
-                </option>
-              ))}
-            </select>
-
-            <Button
-              onClick={handleGenerate}
-              isLoading={isGenerating}
-              disabled={!selectedProjectId || projects.length === 0}
-            >
-              Generate Scripts
-            </Button>
+      <div className="space-y-4">
+        {/* Project chips and format selector */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-wrap gap-2">
+            {projects.length === 0 ? (
+              <p className="text-sm text-neutral-500">No projects available</p>
+            ) : (
+              projects.map((project) => (
+                <button
+                  key={project.id}
+                  onClick={() => {
+                    setSelectedProjectId(project.id)
+                    setSelectedFormatId('') // Reset format when project changes
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    selectedProjectId === project.id
+                      ? 'bg-[#F0F0F0] text-neutral-900 border border-[#ABABAB]'
+                      : 'bg-[#F0F0F0] text-neutral-700 hover:bg-neutral-200 border border-transparent'
+                  }`}
+                >
+                  {project.name}
+                </button>
+              ))
+            )}
           </div>
 
+          <select
+            value={selectedFormatId}
+            onChange={(e) => setSelectedFormatId(e.target.value)}
+            disabled={!selectedProjectId || availableFormats.length === 0}
+            className="px-3 py-2 border border-neutral-300 rounded-2xl focus:outline-none text-sm disabled:bg-neutral-50 disabled:cursor-not-allowed"
+          >
+            <option value="">No specific format</option>
+            {availableFormats.map((format) => (
+              <option key={format.id} value={format.id}>
+                {format.name} {format.isGlobal ? '(Global)' : '(Project-specific)'}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Input field with mechanisms at bottom */}
+        <div className="relative">
+          <textarea
+            placeholder="Add additional context to the call here"
+            value={batchInstructions}
+            onChange={(e) => setBatchInstructions(e.target.value)}
+            rows={6}
+            className="block w-full px-4 py-3 border border-neutral-300 rounded-2xl focus:outline-none text-sm resize-none placeholder:text-[#A3A3A3]"
+          />
+
+          {/* Grey divider above mechanisms */}
           {mechanisms.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Mechanisms (Optional)
-              </label>
-              <div className="flex flex-wrap gap-2">
+            <>
+              <div className="absolute bottom-11 left-0 right-0 h-px bg-neutral-300" />
+
+              {/* Mechanisms at bottom left of input */}
+              <div className="absolute bottom-3 left-4 flex flex-wrap gap-3">
                 {mechanisms.map((mechanism) => (
                   <button
                     key={mechanism.id}
                     type="button"
                     onClick={() => toggleMechanism(mechanism.id)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    className={`text-sm transition-colors ${
                       selectedMechanismIds.includes(mechanism.id)
-                        ? 'bg-neutral-900 text-white'
-                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                        ? 'text-neutral-900 font-medium'
+                        : 'text-neutral-500 hover:text-neutral-700'
                     }`}
                   >
-                    {mechanism.title}
+                    + {mechanism.title}
                   </button>
                 ))}
               </div>
-            </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Batch Instructions (Optional)
-            </label>
-            <textarea
-              placeholder="e.g., Focus on price point, emphasize free trial, target mobile users"
-              value={batchInstructions}
-              onChange={(e) => setBatchInstructions(e.target.value)}
-              rows={2}
-              className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm resize-none"
-            />
-          </div>
-
-          {error && (
-            <div className="bg-neutral-100 border border-neutral-300 p-4">
-              <p className="text-sm text-neutral-900">{error}</p>
-            </div>
+            </>
           )}
         </div>
-      </Card>
+
+        {error && (
+          <div className="bg-neutral-100 border border-neutral-300 rounded-2xl p-4">
+            <p className="text-sm text-neutral-900">{error}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Generate Scripts button */}
+      <button
+        onClick={handleGenerate}
+        disabled={!selectedProjectId || projects.length === 0 || isGenerating}
+        className="w-full py-3 bg-[#F0F0F0] border border-[#D2D2D2] rounded-full text-sm font-medium text-neutral-900 hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {isGenerating ? 'Generating...' : 'Fire Generator'}
+      </button>
 
       {scripts.length > 0 && (
         <div>
           <h2 className="text-2xl font-bold text-neutral-900 mb-6">
-            Generated Variations
+            Results
           </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {scripts.map((script, index) => (
               <ScriptVariation
                 key={index}

@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db/prisma'
 import { HomeScriptGenerator } from '@/components/scripts/HomeScriptGenerator'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 export default async function HomePage() {
   const projects = await prisma.project.findMany({
@@ -21,8 +22,8 @@ export default async function HomePage() {
   })
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <PageContainer>
       <HomeScriptGenerator projects={projects} formats={formats} mechanisms={mechanisms} />
-    </div>
+    </PageContainer>
   )
 }

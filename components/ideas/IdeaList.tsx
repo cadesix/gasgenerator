@@ -59,8 +59,10 @@ export function IdeaList({ ideas }: IdeaListProps) {
   return (
     <div className="space-y-3">
       {ideas.map((idea) => (
-        <Card key={idea.id} padding="sm">
-          <div className="flex items-start justify-between">
+        <div key={idea.id} className="group">
+          <Card padding="sm" className="transition-transform duration-200 ease-out group-hover:scale-[1.02] origin-center">
+            <div className="transition-transform duration-200 ease-out group-hover:scale-[0.9804] origin-center">
+            <div className="flex items-start justify-between">
             <div className="flex-1">
               <p className="text-neutral-900 whitespace-pre-wrap mb-2">
                 {idea.content}
@@ -77,7 +79,8 @@ export function IdeaList({ ideas }: IdeaListProps) {
             <IconButton
               variant="danger"
               size="sm"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 setIdeaToDelete(idea.id)
                 setDeleteModalOpen(true)
               }}
@@ -97,7 +100,9 @@ export function IdeaList({ ideas }: IdeaListProps) {
               </svg>
             </IconButton>
           </div>
-        </Card>
+          </div>
+          </Card>
+        </div>
       ))}
 
       <Modal

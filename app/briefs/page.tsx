@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { prisma } from '@/lib/db/prisma'
 import { Card } from '@/components/ui/Card'
 import { BriefCard } from '@/components/briefs/BriefCard'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 interface PageProps {
   searchParams: Promise<{ status?: string }>
@@ -37,10 +38,9 @@ export default async function BriefsPage({ searchParams }: PageProps) {
   const currentStatus = params.status || 'all'
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <PageContainer>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900 mb-2">Briefs</h1>
-        <p className="text-neutral-600">Manage and track your script briefs</p>
+        <h1 className="text-[20px] font-bold text-neutral-900">Briefs</h1>
       </div>
 
       <div className="mb-6 flex gap-2 flex-wrap">
@@ -49,8 +49,8 @@ export default async function BriefsPage({ searchParams }: PageProps) {
             <button
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 currentStatus === option.value
-                  ? 'bg-neutral-900 text-white'
-                  : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                  ? 'bg-[#F0F0F0] text-neutral-900 border border-[#ABABAB]'
+                  : 'bg-[#F0F0F0] text-neutral-700 hover:bg-neutral-200 border border-transparent'
               }`}
             >
               {option.label}
@@ -82,6 +82,6 @@ export default async function BriefsPage({ searchParams }: PageProps) {
           ))}
         </div>
       )}
-    </div>
+    </PageContainer>
   )
 }

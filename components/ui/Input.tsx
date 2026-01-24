@@ -28,9 +28,9 @@ export function Input({
       )}
       <input
         id={inputId}
-        className={`block w-full px-3 py-2 border shadow-sm bg-white text-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 sm:text-sm ${
+        className={`block w-full px-3 py-2 border bg-white text-neutral-900 focus:outline-none sm:text-sm rounded-2xl ${
           error
-            ? 'border-neutral-900 focus:ring-neutral-900 focus:border-neutral-900'
+            ? 'border-neutral-900'
             : 'border-neutral-300'
         }`}
         {...props}
