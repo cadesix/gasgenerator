@@ -14,6 +14,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     if (body.name !== undefined) updateData.name = body.name
     if (body.description !== undefined) updateData.description = body.description
     if (body.targetAudience !== undefined) updateData.targetAudience = body.targetAudience
+    if (body.icon !== undefined) updateData.icon = body.icon || null
 
     const project = await prisma.project.update({
       where: { id },

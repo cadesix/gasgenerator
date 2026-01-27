@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/db/prisma'
 import { Card } from '@/components/ui/Card'
-import { ScriptCard } from '@/components/scripts/ScriptCard'
+import { ScriptsTable } from '@/components/scripts/ScriptsTable'
 import { PageContainer } from '@/components/layout/PageContainer'
 
 interface PageProps {
@@ -19,7 +19,7 @@ export default async function ScriptsPage({ searchParams }: PageProps) {
     include: {
       project: true,
       format: true,
-      brief: true,
+      editor: true,
     },
     orderBy: { savedAt: 'desc' },
   })
@@ -31,15 +31,13 @@ export default async function ScriptsPage({ searchParams }: PageProps) {
   })
 
   return (
-    <PageContainer>
-      <div className="mb-8">
+    <PageContainer showBackButton={false}>
+      <div className="mb-8 flex items-center gap-4 flex-wrap">
         <h1 className="text-[20px] font-bold text-neutral-900">
           Scripts
         </h1>
-      </div>
-
-      {projects.length > 0 && (
-        <div className="mb-6 flex gap-2 flex-wrap">
+        {projects.length > 0 && (
+          <>
           <Link href="/scripts">
             <button
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
@@ -64,8 +62,9 @@ export default async function ScriptsPage({ searchParams }: PageProps) {
               </button>
             </Link>
           ))}
-        </div>
-      )}
+          </>
+        )}
+      </div>
 
       {scripts.length === 0 ? (
         <Card>
@@ -84,10 +83,19 @@ export default async function ScriptsPage({ searchParams }: PageProps) {
           </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-6">
-          {scripts.map((script) => (
-            <ScriptCard key={script.id} script={script} />
-          ))}
+        <div className="space-y-8">
+          {scripts.filter(s => !s.status).length > 0 && (
+            <div>
+              <h2 className="text-sm font-semibold text-neutral-900 mb-3">Unassigned</h2>
+              <ScriptsTable scripts={scripts.filter(s => !s.status)} />
+            </div>
+          )}
+          {scripts.filter(s => s.status).length > 0 && (
+            <div>
+              <h2 className="text-sm font-semibold text-neutral-900 mb-3">Assigned</h2>
+              <ScriptsTable scripts={scripts.filter(s => s.status)} />
+            </div>
+          )}
         </div>
       )}
     </PageContainer>

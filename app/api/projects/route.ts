@@ -29,7 +29,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, description, targetAudience, examples } = body
+    const { name, description, targetAudience, examples, icon } = body
 
     const project = await prisma.project.create({
       data: {
@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
         description,
         targetAudience,
         examples,
+        icon: icon || null,
       },
     })
 

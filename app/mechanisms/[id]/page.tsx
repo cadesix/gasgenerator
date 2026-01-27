@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/db/prisma'
 import { MechanismForm } from '@/components/mechanisms/MechanismForm'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 export default async function EditMechanismPage({
   params,
@@ -19,13 +20,8 @@ export default async function EditMechanismPage({
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900">{mechanism.title}</h1>
-        <p className="mt-2 text-neutral-600">Edit mechanism details</p>
-      </div>
-
+    <PageContainer title={mechanism.title}>
       <MechanismForm mechanism={mechanism} />
-    </div>
+    </PageContainer>
   )
 }

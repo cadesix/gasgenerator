@@ -10,7 +10,6 @@ export function HeaderNav() {
   const navItems = [
     { href: '/', label: 'Create' },
     { href: '/scripts', label: 'Scripts' },
-    { href: '/briefs', label: 'Briefs' },
     { href: '/editors', label: 'Editors' },
     { href: '/ideas', label: 'Ideas' },
     { href: '/settings', label: 'Settings' },

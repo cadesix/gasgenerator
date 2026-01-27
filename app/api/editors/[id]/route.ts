@@ -9,12 +9,13 @@ export async function PATCH(
   try {
     const { id } = await params
     const body = await request.json()
-    const { name } = body
+    const { name, notes } = body
 
     const editor = await prisma.editor.update({
       where: { id },
       data: {
         ...(name !== undefined && { name: name.trim() }),
+        ...(notes !== undefined && { notes: notes?.trim() || null }),
       },
     })
 

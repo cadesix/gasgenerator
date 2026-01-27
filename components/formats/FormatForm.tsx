@@ -39,8 +39,7 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
     name: initialData?.name || '',
     structure: initialData?.structure || '',
     visualDescription: initialData?.visualDescription || '',
-    isGlobal: initialData ? String(initialData.isGlobal) : 'true',
-    projectId: initialData?.projectId || '',
+    scope: initialData?.isGlobal ? 'global' : (initialData?.projectId || 'global'),
     notes: initialData?.notes || '',
   })
 
@@ -140,8 +139,8 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
         name: formData.name,
         structure: formData.structure,
         visualDescription: formData.visualDescription,
-        isGlobal: formData.isGlobal === 'true',
-        projectId: formData.isGlobal === 'false' ? formData.projectId : null,
+        isGlobal: formData.scope === 'global',
+        projectId: formData.scope === 'global' ? null : formData.scope,
         sections: JSON.stringify(sectionsArray),
         examples: JSON.stringify(examplesArray),
         referenceVideos: JSON.stringify(referenceVideosArray),
@@ -223,7 +222,7 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
                     value={section}
                     onChange={(e) => handleSectionChange(index, e.target.value)}
                     required
-                    className="w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                    className="w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-lg"
                   />
                 </div>
               ))}
@@ -238,33 +237,20 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
           </div>
 
           <Select
-            label="Availability"
-            value={formData.isGlobal}
+            label="App"
+            required
+            value={formData.scope}
             onChange={(e) =>
-              setFormData({ ...formData, isGlobal: e.target.value, projectId: '' })
+              setFormData({ ...formData, scope: e.target.value })
             }
           >
-            <option value="true">Global (available for all apps)</option>
-            <option value="false">App-specific</option>
+            <option value="global">Global (available for all apps)</option>
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.name}
+              </option>
+            ))}
           </Select>
-
-          {formData.isGlobal === 'false' && (
-            <Select
-              label="App"
-              required
-              value={formData.projectId}
-              onChange={(e) =>
-                setFormData({ ...formData, projectId: e.target.value })
-              }
-            >
-              <option value="">Select an app</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </Select>
-          )}
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
@@ -287,7 +273,7 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
                     value={example}
                     onChange={(e) => handleExampleChange(index, e.target.value)}
                     rows={3}
-                    className="w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                    className="w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-2xl"
                   />
                 </div>
               ))}
@@ -323,7 +309,7 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
                     value={video}
                     onChange={(e) => handleReferenceVideoChange(index, e.target.value)}
                     placeholder="https://"
-                    className="w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                    className="w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-lg"
                   />
                 </div>
               ))}
@@ -359,7 +345,7 @@ export function FormatForm({ projects, initialData }: FormatFormProps) {
                     value={link}
                     onChange={(e) => handleFootageLinkChange(index, e.target.value)}
                     placeholder="https://"
-                    className="w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                    className="w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-lg"
                   />
                 </div>
               ))}

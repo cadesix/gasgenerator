@@ -68,7 +68,7 @@ interface OverflowMenuItemProps {
 export function OverflowMenuItem({ children, onClick, variant = 'default' }: OverflowMenuItemProps) {
   const variantStyles = {
     default: 'text-neutral-900 hover:bg-neutral-100',
-    danger: 'text-neutral-900 hover:bg-neutral-100',
+    danger: 'text-red-600 hover:bg-red-50',
   }
 
   return (

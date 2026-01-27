@@ -10,16 +10,16 @@ interface Editor {
   name: string
 }
 
-interface CreateBriefButtonProps {
+interface AssignScriptButtonProps {
   scriptId: string
 }
 
-export function CreateBriefButton({ scriptId }: CreateBriefButtonProps) {
+export function AssignScriptButton({ scriptId }: AssignScriptButtonProps) {
   const router = useRouter()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editors, setEditors] = useState<Editor[]>([])
   const [selectedEditorId, setSelectedEditorId] = useState<string>('')
-  const [isCreating, setIsCreating] = useState(false)
+  const [isAssigning, setIsAssigning] = useState(false)
   const [isLoadingEditors, setIsLoadingEditors] = useState(false)
 
   useEffect(() => {
@@ -43,41 +43,41 @@ export function CreateBriefButton({ scriptId }: CreateBriefButtonProps) {
     }
   }
 
-  const handleCreateBrief = async () => {
-    setIsCreating(true)
+  const handleAssign = async () => {
+    setIsAssigning(true)
 
     try {
-      const response = await fetch('/api/briefs', {
-        method: 'POST',
+      const response = await fetch(`/api/scripts/${scriptId}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          scriptId,
           editorId: selectedEditorId || null,
+          status: 'assigned',
         }),
       })
 
-      if (!response.ok) throw new Error('Failed to create brief')
+      if (!response.ok) throw new Error('Failed to assign script')
 
-      const brief = await response.json()
-      router.push(`/briefs/${brief.id}`)
+      router.refresh()
+      setIsModalOpen(false)
     } catch (error) {
-      console.error('Error creating brief:', error)
-      alert('Failed to create brief. Please try again.')
+      console.error('Error assigning script:', error)
+      alert('Failed to assign script. Please try again.')
     } finally {
-      setIsCreating(false)
+      setIsAssigning(false)
     }
   }
 
   return (
     <>
       <Button onClick={() => setIsModalOpen(true)}>
-        Create Brief
+        Assign Script
       </Button>
 
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Create Brief"
+        title="Assign Script"
       >
         <div className="space-y-4">
           <div>
@@ -90,7 +90,7 @@ export function CreateBriefButton({ scriptId }: CreateBriefButtonProps) {
               <select
                 value={selectedEditorId}
                 onChange={(e) => setSelectedEditorId(e.target.value)}
-                className="w-full px-3 py-2 border border-neutral-300 rounded focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900"
+                className="w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 rounded-lg focus:outline-none"
               >
                 <option value="">Unassigned</option>
                 {editors.map((editor) => (
@@ -107,11 +107,11 @@ export function CreateBriefButton({ scriptId }: CreateBriefButtonProps) {
               Cancel
             </Button>
             <Button
-              onClick={handleCreateBrief}
-              isLoading={isCreating}
+              onClick={handleAssign}
+              isLoading={isAssigning}
               disabled={isLoadingEditors}
             >
-              Create Brief
+              Assign Script
             </Button>
           </div>
         </div>

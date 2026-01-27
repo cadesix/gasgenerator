@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { generateScripts } from '@/lib/ai/claude'
+import { Mechanism } from '@prisma/client'
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch mechanisms if provided
-    let mechanisms = []
+    let mechanisms: Mechanism[] = []
     if (mechanismIds && mechanismIds.length > 0) {
       mechanisms = await prisma.mechanism.findMany({
         where: {

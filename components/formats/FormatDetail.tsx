@@ -21,15 +21,18 @@ interface FormatDetailProps {
     notes: string | null
   }
   projects: Array<{ id: string; name: string }>
+  externalEditMode?: boolean
+  onEditModeChange?: (isEditing: boolean) => void
 }
 
-export function FormatDetail({ format, projects }: FormatDetailProps) {
+export function FormatDetail({ format, projects, externalEditMode, onEditModeChange }: FormatDetailProps) {
   const router = useRouter()
   const [isEditingInfo, setIsEditingInfo] = useState(false)
+
+  const actualIsEditingInfo = externalEditMode !== undefined ? externalEditMode : isEditingInfo
   const [structure, setStructure] = useState(format.structure)
   const [visualDescription, setVisualDescription] = useState(format.visualDescription)
-  const [isGlobal, setIsGlobal] = useState(format.isGlobal)
-  const [projectId, setProjectId] = useState(format.projectId || '')
+  const [scope, setScope] = useState(format.isGlobal ? 'global' : (format.projectId || 'global'))
   const [isSaving, setIsSaving] = useState(false)
 
   const [sections, setSections] = useState<string[]>(JSON.parse(format.sections) as string[])
@@ -60,14 +63,18 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
         body: JSON.stringify({
           structure: structure.trim(),
           visualDescription: visualDescription.trim(),
-          isGlobal,
-          projectId: isGlobal ? null : projectId || null,
+          isGlobal: scope === 'global',
+          projectId: scope === 'global' ? null : scope,
         }),
       })
 
       if (!response.ok) throw new Error('Failed to update format')
 
-      setIsEditingInfo(false)
+      if (onEditModeChange) {
+        onEditModeChange(false)
+      } else {
+        setIsEditingInfo(false)
+      }
       router.refresh()
     } catch (error) {
       console.error('Error updating format:', error)
@@ -308,30 +315,10 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
     }
   }
 
-  const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this format? This action cannot be undone.')) {
-      return
-    }
-
-    try {
-      const response = await fetch(`/api/formats/${format.id}`, {
-        method: 'DELETE',
-      })
-
-      if (!response.ok) throw new Error('Failed to delete format')
-
-      router.push('/formats')
-      router.refresh()
-    } catch (error) {
-      console.error('Error deleting format:', error)
-      alert('Failed to delete format. Please try again.')
-    }
-  }
-
   return (
     <>
       <Card className="mb-8">
-        {!isEditingInfo ? (
+        {!actualIsEditingInfo ? (
           <>
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
@@ -343,20 +330,6 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
                     {projects.find((p) => p.id === format.projectId)?.name || 'App-specific'}
                   </Badge>
                 )}
-              </div>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setIsEditingInfo(true)}
-                  className="text-sm text-neutral-900 hover:text-neutral-600"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="text-sm text-neutral-900 hover:text-neutral-600"
-                >
-                  Delete
-                </button>
               </div>
             </div>
             <div className="space-y-4">
@@ -384,7 +357,7 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
                   value={structure}
                   onChange={(e) => setStructure(e.target.value)}
                   rows={3}
-                  className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                  className="block w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-2xl"
                 />
               </div>
               <div>
@@ -395,52 +368,37 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
                   value={visualDescription}
                   onChange={(e) => setVisualDescription(e.target.value)}
                   rows={3}
-                  className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                  className="block w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-2xl"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Availability
+                  App
                 </label>
                 <select
-                  value={isGlobal ? 'true' : 'false'}
-                  onChange={(e) => {
-                    setIsGlobal(e.target.value === 'true')
-                    if (e.target.value === 'true') setProjectId('')
-                  }}
-                  className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                  value={scope}
+                  onChange={(e) => setScope(e.target.value)}
+                  className="block w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-2xl"
                 >
-                  <option value="true">Global (available for all apps)</option>
-                  <option value="false">App-specific</option>
+                  <option value="global">Global (available for all apps)</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.name}
+                    </option>
+                  ))}
                 </select>
               </div>
-              {!isGlobal && (
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
-                    App
-                  </label>
-                  <select
-                    value={projectId}
-                    onChange={(e) => setProjectId(e.target.value)}
-                    className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
-                  >
-                    <option value="">Select an app</option>
-                    {projects.map((project) => (
-                      <option key={project.id} value={project.id}>
-                        {project.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
               <div className="flex gap-3 justify-end">
                 <button
                   onClick={() => {
                     setStructure(format.structure)
                     setVisualDescription(format.visualDescription)
-                    setIsGlobal(format.isGlobal)
-                    setProjectId(format.projectId || '')
-                    setIsEditingInfo(false)
+                    setScope(format.isGlobal ? 'global' : (format.projectId || 'global'))
+                    if (onEditModeChange) {
+                      onEditModeChange(false)
+                    } else {
+                      setIsEditingInfo(false)
+                    }
                   }}
                   className="text-sm text-neutral-600 hover:text-neutral-900"
                   disabled={isSaving}
@@ -502,7 +460,7 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
                     value={section}
                     onChange={(e) => handleSectionChange(index, e.target.value)}
                     placeholder={`Section ${index + 1}`}
-                    className="w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                    className="w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-lg"
                   />
                 </div>
               ))}
@@ -562,7 +520,7 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
               onChange={(e) => setNewExample(e.target.value)}
               placeholder="Add a new example script..."
               rows={3}
-              className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm mb-3"
+              className="block w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-2xl mb-3"
             />
             <Button
               onClick={handleAddExample}
@@ -615,7 +573,7 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
               value={newReferenceVideo}
               onChange={(e) => setNewReferenceVideo(e.target.value)}
               placeholder="https://"
-              className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm mb-3"
+              className="block w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-2xl mb-3"
             />
             <Button
               onClick={handleAddReferenceVideo}
@@ -668,7 +626,7 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
               value={newFootageLink}
               onChange={(e) => setNewFootageLink(e.target.value)}
               placeholder="https://"
-              className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm mb-3"
+              className="block w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-2xl mb-3"
             />
             <Button
               onClick={handleAddFootageLink}
@@ -708,7 +666,7 @@ export function FormatDetail({ format, projects }: FormatDetailProps) {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
-              className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+              className="block w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-2xl"
             />
             <div className="flex gap-3 justify-end">
               <button

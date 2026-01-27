@@ -63,7 +63,18 @@ export function ScriptGenerator({ project, formats }: ScriptGeneratorProps) {
 
   const handleUpdateScript = (index: number, updates: Partial<GeneratedScript>) => {
     setScripts((prev) =>
-      prev.map((script, i) => (i === index ? { ...script, ...updates } : script))
+      prev.map((script, i) => {
+        if (i === index) {
+          const updated: GeneratedScript = { ...script }
+          Object.entries(updates).forEach(([key, value]) => {
+            if (value !== undefined) {
+              updated[key] = value
+            }
+          })
+          return updated
+        }
+        return script
+      })
     )
   }
 
@@ -81,7 +92,7 @@ export function ScriptGenerator({ project, formats }: ScriptGeneratorProps) {
             ) : (
               formats.map((format) => (
                 <option key={format.id} value={format.id}>
-                  {format.name} {format.isGlobal ? '(Global)' : '(Project-specific)'}
+                  {format.name}
                 </option>
               ))
             )}

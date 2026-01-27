@@ -121,7 +121,7 @@ export function ScriptVariation({
                 value={repromptContext}
                 onChange={(e) => setRepromptContext(e.target.value)}
                 placeholder="Add context for regeneration..."
-                className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900"
+                className="w-full px-3 py-2 text-sm border border-neutral-300 bg-white text-neutral-900 focus:outline-none rounded-lg"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {

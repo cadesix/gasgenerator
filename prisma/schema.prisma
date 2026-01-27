@@ -15,6 +15,7 @@ model Project {
   name            String
   description     String   @default("")
   targetAudience  String   @default("")
+  icon            String?  // Base64 encoded image or URL
 
   // Store as JSON for flexibility - easy to change structure
   examples        String   @default("[]")  // JSON array
@@ -75,6 +76,12 @@ model SavedScript {
   projectId   String
   formatId    String?
 
+  // Workflow fields (formerly in Brief)
+  editorId    String?
+  status      String?  // assigned, in_progress, completed
+  notes       String?
+  videoLink   String?
+
   // Future: add tags, ratings, etc
   metadata    String?  @default("{}")
 
@@ -84,48 +91,25 @@ model SavedScript {
 
   project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
   format      ScriptFormat? @relation(fields: [formatId], references: [id])
-  brief       Brief?
+  editor      Editor?       @relation(fields: [editorId], references: [id])
 
   @@index([projectId])
   @@index([formatId])
   @@index([shareId])
-}
-
-model Brief {
-  id              String   @id @default(uuid())
-
-  // One-to-one with script
-  scriptId        String   @unique
-  script          SavedScript @relation(fields: [scriptId], references: [id], onDelete: Cascade)
-
-  // PM/workflow fields
-  editorId        String?
-  editor          Editor?  @relation(fields: [editorId], references: [id])
-  status          String   @default("assigned") // assigned, in_progress, completed
-  notes           String?
-
-  // Shareable link for editors
-  shareId         String   @unique @default(uuid())
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  deletedAt       DateTime?
-
-  @@index([scriptId])
-  @@index([shareId])
-  @@index([status])
   @@index([editorId])
+  @@index([status])
 }
 
 model Editor {
   id          String   @id @default(uuid())
   name        String
+  notes       String?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
 
-  briefs      Brief[]
+  scripts     SavedScript[]
 
   @@index([name])
 }

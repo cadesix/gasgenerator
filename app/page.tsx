@@ -22,7 +22,7 @@ export default async function HomePage() {
   })
 
   return (
-    <PageContainer>
+    <PageContainer showBackButton={false}>
       <HomeScriptGenerator projects={projects} formats={formats} mechanisms={mechanisms} />
     </PageContainer>
   )

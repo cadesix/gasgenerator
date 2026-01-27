@@ -9,7 +9,7 @@ export async function GET() {
       include: {
         _count: {
           select: {
-            briefs: true,
+            scripts: true,
           },
         },
       },
@@ -30,7 +30,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name } = body
+    const { name, notes } = body
 
     if (!name || typeof name !== 'string') {
       return NextResponse.json(
@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
     const editor = await prisma.editor.create({
       data: {
         name: name.trim(),
+        notes: notes?.trim() || null,
       },
     })
 

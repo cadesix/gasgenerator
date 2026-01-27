@@ -128,12 +128,23 @@ export function HomeScriptGenerator({ projects, formats, mechanisms }: HomeScrip
 
   const handleUpdateScript = (index: number, updates: Partial<GeneratedScript>) => {
     setScripts((prev) =>
-      prev.map((script, i) => (i === index ? { ...script, ...updates } : script))
+      prev.map((script, i) => {
+        if (i === index) {
+          const updated: GeneratedScript = { ...script }
+          Object.entries(updates).forEach(([key, value]) => {
+            if (value !== undefined) {
+              updated[key] = value
+            }
+          })
+          return updated
+        }
+        return script
+      })
     )
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <div className="space-y-4">
         {/* Project chips and format selector */}
         <div className="flex items-center justify-between gap-4">
@@ -148,12 +159,19 @@ export function HomeScriptGenerator({ projects, formats, mechanisms }: HomeScrip
                     setSelectedProjectId(project.id)
                     setSelectedFormatId('') // Reset format when project changes
                   }}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${
                     selectedProjectId === project.id
                       ? 'bg-[#F0F0F0] text-neutral-900 border border-[#ABABAB]'
                       : 'bg-[#F0F0F0] text-neutral-700 hover:bg-neutral-200 border border-transparent'
                   }`}
                 >
+                  {project.icon && (
+                    <img
+                      src={project.icon}
+                      alt={project.name}
+                      className="w-4 h-4 rounded object-cover"
+                    />
+                  )}
                   {project.name}
                 </button>
               ))
@@ -164,12 +182,12 @@ export function HomeScriptGenerator({ projects, formats, mechanisms }: HomeScrip
             value={selectedFormatId}
             onChange={(e) => setSelectedFormatId(e.target.value)}
             disabled={!selectedProjectId || availableFormats.length === 0}
-            className="px-3 py-2 border border-neutral-300 rounded-2xl focus:outline-none text-sm disabled:bg-neutral-50 disabled:cursor-not-allowed"
+            className="w-48 px-3 py-2 border border-neutral-300 bg-white text-neutral-900 rounded-full focus:outline-none text-sm disabled:bg-neutral-50 disabled:cursor-not-allowed truncate"
           >
             <option value="">No specific format</option>
             {availableFormats.map((format) => (
               <option key={format.id} value={format.id}>
-                {format.name} {format.isGlobal ? '(Global)' : '(Project-specific)'}
+                {format.name}
               </option>
             ))}
           </select>
@@ -229,10 +247,10 @@ export function HomeScriptGenerator({ projects, formats, mechanisms }: HomeScrip
 
       {scripts.length > 0 && (
         <div>
-          <h2 className="text-2xl font-bold text-neutral-900 mb-6">
+          <h2 className="text-2xl font-bold text-neutral-900 mb-6 mt-12">
             Results
           </h2>
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-2">
             {scripts.map((script, index) => (
               <ScriptVariation
                 key={index}

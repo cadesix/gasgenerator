@@ -1,27 +1,27 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/db/prisma'
-import { ProjectForm } from '@/components/projects/ProjectForm'
+import { EditorForm } from '@/components/editors/EditorForm'
 import { PageContainer } from '@/components/layout/PageContainer'
 
-export default async function EditProjectPage({
+export default async function EditEditorPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const project = await prisma.project.findFirst({
+  const editor = await prisma.editor.findFirst({
     where: {
       id: (await params).id,
       deletedAt: null
     },
   })
 
-  if (!project) {
+  if (!editor) {
     notFound()
   }
 
   return (
-    <PageContainer title={project.name}>
-      <ProjectForm project={project} />
+    <PageContainer title={editor.name}>
+      <EditorForm editor={editor} />
     </PageContainer>
   )
 }

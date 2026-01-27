@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 
-interface BriefNotesProps {
-  briefId: string
+interface ScriptNotesProps {
+  scriptId: string
   initialNotes: string | null
 }
 
-export function BriefNotes({ briefId, initialNotes }: BriefNotesProps) {
+export function ScriptNotes({ scriptId, initialNotes }: ScriptNotesProps) {
   const router = useRouter()
   const [notes, setNotes] = useState(initialNotes || '')
   const [isEditing, setIsEditing] = useState(false)
@@ -19,7 +19,7 @@ export function BriefNotes({ briefId, initialNotes }: BriefNotesProps) {
   const handleSave = async () => {
     setIsSaving(true)
     try {
-      const response = await fetch(`/api/briefs/${briefId}`, {
+      const response = await fetch(`/api/scripts/${scriptId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -67,8 +67,8 @@ export function BriefNotes({ briefId, initialNotes }: BriefNotesProps) {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={6}
-            placeholder="Add notes about this brief..."
-            className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+            placeholder="Add notes about this script..."
+            className="block w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-2xl"
           />
           <div className="flex gap-3 justify-end">
             <button

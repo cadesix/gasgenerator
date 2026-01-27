@@ -9,7 +9,6 @@ async function main() {
       name: 'Relic',
       description: 'iOS mobile application that uses AI-powered image recognition to instantly identify, appraise, and provide historical information about antiques and vintage items.',
       targetAudience: 'Ages 55+, antique enthusiasts, collectors, estate sale shoppers',
-      tone: 'Trustworthy, expert, reassuring, helpful',
       examples: JSON.stringify([
         'Hook: "I inherited my grandmother\'s entire collection and had no idea what anything was worth" Body: "Then I discovered Relic. Just snap a photo and instantly get the history, value, and details of any antique. It\'s like having an expert appraiser in your pocket - and it\'s completely free. Download Relic today."',
         'Hook: "Antique dealers don\'t want you to know about this app" Body: "Relic uses AI to instantly identify and appraise any vintage item. No more guessing, no more expensive appraisers. Just point your camera and get accurate values based on real sales data. The app that puts expert knowledge in your hands."',
@@ -23,7 +22,6 @@ async function main() {
       name: 'TYB',
       description: 'Social shopping app where users get free products from brands like Glossier, Saie, and SET in exchange for completing challenges and leaving reviews.',
       targetAudience: 'Young women ages 18-30 who want to feel like influencers and get PR packages',
-      tone: 'Casual, insider, FOMO-driven, conversational',
       examples: JSON.stringify([
         'Hook: "I figured out this hack to get brands to send me exclusive products and treat me like an influencer even though I only have 900 followers" Body: "So I found this new app TYB which is very lowkey right now, but big brands have recently started using it to send free products in exchange for content. All you have to do is find the brand you want and scroll through and complete these challenges. Then in exchange for your feedback, photos, whatever, they send you products! If you want to try it out you should probably download it right now because I\'m not gatekeeping it anymore and it\'s starting to blow up"',
         'Hook: "I\'m not an influencer and I got ALL of these brand packages for free. Here\'s the tea" Body: "So I found this new app TYB which is very lowkey right now, but big brands have recently started using it to send free products in exchange for content. All you have to do is find the brand you want and scroll through and complete these challenges. Then in exchange for your feedback, photos, whatever, they send you products! If you want to try it out you should probably download it right now because I\'m not gatekeeping it anymore and it\'s starting to blow up"',

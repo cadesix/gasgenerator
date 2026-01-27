@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
+import { Textarea } from '@/components/ui/Textarea'
 import { Modal } from '@/components/ui/Modal'
 import { PageContainer } from '@/components/layout/PageContainer'
 
@@ -13,6 +14,7 @@ interface Project {
   name: string
   description: string
   targetAudience: string
+  icon?: string | null
   _count?: {
     formats: number
     savedScripts: number
@@ -30,6 +32,7 @@ interface Format {
 interface Editor {
   id: string
   name: string
+  notes?: string | null
   _count?: {
     briefs: number
   }
@@ -54,10 +57,13 @@ export default function SettingsPage() {
   const [editors, setEditors] = useState<Editor[]>([])
   const [isEditorModalOpen, setIsEditorModalOpen] = useState(false)
   const [editingEditor, setEditingEditor] = useState<Editor | null>(null)
-  const [editorFormData, setEditorFormData] = useState({ name: '' })
+  const [editorFormData, setEditorFormData] = useState({ name: '', notes: '' })
 
   // Mechanisms state
   const [mechanisms, setMechanisms] = useState<Mechanism[]>([])
+
+  // Formats expansion state
+  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set())
 
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -92,10 +98,10 @@ export default function SettingsPage() {
   const handleOpenEditorModal = (editor?: Editor) => {
     if (editor) {
       setEditingEditor(editor)
-      setEditorFormData({ name: editor.name })
+      setEditorFormData({ name: editor.name, notes: editor.notes || '' })
     } else {
       setEditingEditor(null)
-      setEditorFormData({ name: '' })
+      setEditorFormData({ name: '', notes: '' })
     }
     setIsEditorModalOpen(true)
   }
@@ -114,7 +120,10 @@ export default function SettingsPage() {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: editorFormData.name.trim() }),
+        body: JSON.stringify({
+          name: editorFormData.name.trim(),
+          notes: editorFormData.notes.trim() || null,
+        }),
       })
 
       if (!response.ok) throw new Error('Failed to save editor')
@@ -122,7 +131,7 @@ export default function SettingsPage() {
       await fetchAllData()
       setIsEditorModalOpen(false)
       setEditingEditor(null)
-      setEditorFormData({ name: '' })
+      setEditorFormData({ name: '', notes: '' })
     } catch (error) {
       console.error('Error saving editor:', error)
       alert('Failed to save editor. Please try again.')
@@ -130,6 +139,26 @@ export default function SettingsPage() {
       setIsSaving(false)
     }
   }
+
+  // Format handlers
+  const toggleProjectExpansion = (projectId: string) => {
+    setExpandedProjects(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(projectId)) {
+        newSet.delete(projectId)
+      } else {
+        newSet.add(projectId)
+      }
+      return newSet
+    })
+  }
+
+  // Group formats by project
+  const globalFormats = formats.filter(f => f.isGlobal)
+  const formatsByProject = projects.map(project => ({
+    project,
+    formats: formats.filter(f => f.projectId === project.id)
+  })).filter(group => group.formats.length > 0)
 
   // Mechanism handlers
   const handleDeleteMechanism = async (id: string) => {
@@ -160,15 +189,17 @@ export default function SettingsPage() {
 
   return (
     <>
-      <PageContainer>
-        <h1 className="text-[20px] font-bold text-neutral-900 mb-8">Settings</h1>
+      <PageContainer
+        title="Settings"
+        showBackButton={false}
+      >
 
         <div className="space-y-12">
           {/* Apps Section */}
           <section>
             <div className="mb-4">
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-semibold text-neutral-900">Apps</h2>
+                <h2 className="text-[20px] font-bold text-neutral-900">Apps</h2>
                 <button
                   onClick={() => router.push('/projects/new')}
                   className="flex items-center justify-center w-6 h-6 rounded-full border border-neutral-300 hover:border-neutral-900 transition-colors"
@@ -181,21 +212,40 @@ export default function SettingsPage() {
               <p className="text-sm text-neutral-600 mt-1">Manage your apps/projects</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {projects.map((project) => (
-                <div key={project.id} onClick={() => router.push(`/projects/${project.id}`)} className="cursor-pointer group">
-                  <Card className="transition-transform duration-200 ease-out group-hover:scale-[1.02] origin-center">
-                    <div className="transition-transform duration-200 ease-out group-hover:scale-[0.9804] origin-center">
-                      <div className="space-y-3">
-                        <h3 className="text-lg font-semibold text-neutral-900">{project.name}</h3>
+            <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden">
+              {projects.map((project, index) => (
+                <div
+                  key={project.id}
+                  onClick={() => router.push(`/projects/${project.id}`)}
+                  className={`cursor-pointer group px-6 py-4 hover:bg-neutral-50 transition-colors ${
+                    index > 0 ? 'border-t border-neutral-200' : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      {project.icon ? (
+                        <img
+                          src={project.icon}
+                          alt={project.name}
+                          className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-neutral-200 flex items-center justify-center flex-shrink-0">
+                          <span className="text-neutral-500 text-xs font-medium">
+                            {project.name.substring(0, 2).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-semibold text-neutral-900">{project.name}</h3>
                         {project._count && (
-                          <div className="text-sm text-neutral-500 pt-3 border-t border-neutral-200">
+                          <p className="text-sm text-neutral-500 mt-0.5">
                             {project._count.formats} format{project._count.formats !== 1 ? 's' : ''} · {project._count.savedScripts} script{project._count.savedScripts !== 1 ? 's' : ''}
-                          </div>
+                          </p>
                         )}
                       </div>
-                      </div>
-                  </Card>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -205,7 +255,7 @@ export default function SettingsPage() {
           <section>
             <div className="mb-4">
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-semibold text-neutral-900">Formats</h2>
+                <h2 className="text-[20px] font-bold text-neutral-900">Formats</h2>
                 <button
                   onClick={() => router.push('/formats/new')}
                   className="flex items-center justify-center w-6 h-6 rounded-full border border-neutral-300 hover:border-neutral-900 transition-colors"
@@ -215,29 +265,126 @@ export default function SettingsPage() {
                   </svg>
                 </button>
               </div>
-              <p className="text-sm text-neutral-600 mt-1">Manage script formats</p>
+              <p className="text-sm text-neutral-600 mt-1">Manage script formats by project</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {formats.map((format) => (
-                <div key={format.id} onClick={() => router.push(`/formats/${format.id}`)} className="cursor-pointer group">
-                  <Card className="transition-transform duration-200 ease-out group-hover:scale-[1.02] origin-center">
-                    <div className="transition-transform duration-200 ease-out group-hover:scale-[0.9804] origin-center">
-                      <div className="space-y-3">
-                      <div className="flex justify-between items-start">
-                        <h3 className="text-lg font-semibold text-neutral-900">{format.name}</h3>
-                        {format.isGlobal ? (
-                          <span className="text-xs bg-neutral-900 text-white px-2 py-1 rounded">Global</span>
-                        ) : (
-                          <span className="text-xs bg-green-600 text-white px-2 py-1 rounded">App-specific</span>
-                        )}
-                      </div>
-                      <p className="text-sm text-neutral-600 line-clamp-2">{format.structure}</p>
+            <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden">
+              {/* Global Formats */}
+              {globalFormats.length > 0 && (
+                <>
+                  <div
+                    onClick={() => toggleProjectExpansion('global')}
+                    className="cursor-pointer px-6 py-4 hover:bg-neutral-50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3 flex-1">
+                        <svg
+                          className={`w-4 h-4 text-neutral-400 transition-transform ${
+                            expandedProjects.has('global') ? 'rotate-90' : ''
+                          }`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                        <div>
+                          <h3 className="text-base font-semibold text-neutral-900">Global Formats</h3>
+                          <p className="text-sm text-neutral-500 mt-0.5">
+                            {globalFormats.length} format{globalFormats.length !== 1 ? 's' : ''}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </Card>
+                  </div>
+                  {expandedProjects.has('global') && globalFormats.map((format, index) => (
+                    <div
+                      key={format.id}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        router.push(`/formats/${format.id}`)
+                      }}
+                      className="cursor-pointer group px-6 py-3 pl-16 hover:bg-neutral-50 transition-colors border-t border-neutral-100"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-medium text-neutral-900 mb-1">{format.name}</h4>
+                          <p className="text-xs text-neutral-600 line-clamp-1">{format.structure}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+
+              {/* Project-specific Formats */}
+              {formatsByProject.map((group, groupIndex) => (
+                <div key={group.project.id}>
+                  <div
+                    onClick={() => toggleProjectExpansion(group.project.id)}
+                    className={`cursor-pointer px-6 py-4 hover:bg-neutral-50 transition-colors ${
+                      groupIndex > 0 || globalFormats.length > 0 ? 'border-t border-neutral-200' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3 flex-1">
+                        <svg
+                          className={`w-4 h-4 text-neutral-400 transition-transform ${
+                            expandedProjects.has(group.project.id) ? 'rotate-90' : ''
+                          }`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                        {group.project.icon ? (
+                          <img
+                            src={group.project.icon}
+                            alt={group.project.name}
+                            className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-lg bg-neutral-200 flex items-center justify-center flex-shrink-0">
+                            <span className="text-neutral-500 text-xs font-medium">
+                              {group.project.name.substring(0, 2).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
+                        <div>
+                          <h3 className="text-base font-semibold text-neutral-900">{group.project.name}</h3>
+                          <p className="text-sm text-neutral-500 mt-0.5">
+                            {group.formats.length} format{group.formats.length !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {expandedProjects.has(group.project.id) && group.formats.map((format) => (
+                    <div
+                      key={format.id}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        router.push(`/formats/${format.id}`)
+                      }}
+                      className="cursor-pointer group px-6 py-3 pl-16 hover:bg-neutral-50 transition-colors border-t border-neutral-100"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-medium text-neutral-900 mb-1">{format.name}</h4>
+                          <p className="text-xs text-neutral-600 line-clamp-1">{format.structure}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ))}
+
+              {formats.length === 0 && (
+                <div className="px-6 py-8 text-center text-neutral-500">
+                  No formats yet. Create your first format to get started.
+                </div>
+              )}
             </div>
           </section>
 
@@ -245,7 +392,7 @@ export default function SettingsPage() {
           <section>
             <div className="mb-4">
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-semibold text-neutral-900">Editors</h2>
+                <h2 className="text-[20px] font-bold text-neutral-900">Editors</h2>
                 <button
                   onClick={() => handleOpenEditorModal()}
                   className="flex items-center justify-center w-6 h-6 rounded-full border border-neutral-300 hover:border-neutral-900 transition-colors"
@@ -258,21 +405,28 @@ export default function SettingsPage() {
               <p className="text-sm text-neutral-600 mt-1">Manage editors who can be assigned to briefs</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {editors.map((editor) => (
-                <div key={editor.id} onClick={() => handleOpenEditorModal(editor)} className="cursor-pointer group">
-                  <Card className="transition-transform duration-200 ease-out group-hover:scale-[1.02] origin-center">
-                    <div className="transition-transform duration-200 ease-out group-hover:scale-[0.9804] origin-center">
-                      <div className="space-y-3">
-                        <h3 className="text-lg font-semibold text-neutral-900">{editor.name}</h3>
-                        {editor._count && (
-                          <div className="text-sm text-neutral-500 pt-3 border-t border-neutral-200">
-                            {editor._count.briefs} brief{editor._count.briefs !== 1 ? 's' : ''} assigned
-                          </div>
-                        )}
+            <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden">
+              {editors.map((editor, index) => (
+                <div
+                  key={editor.id}
+                  onClick={() => handleOpenEditorModal(editor)}
+                  className={`cursor-pointer group px-6 py-4 hover:bg-neutral-50 transition-colors ${
+                    index > 0 ? 'border-t border-neutral-200' : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-semibold text-neutral-900 mb-1">{editor.name}</h3>
+                      {editor.notes && (
+                        <p className="text-sm text-neutral-600 line-clamp-1">{editor.notes}</p>
+                      )}
+                    </div>
+                    {editor._count && editor._count.briefs > 0 && (
+                      <div className="text-sm text-neutral-500">
+                        {editor._count.briefs} brief{editor._count.briefs !== 1 ? 's' : ''}
                       </div>
-                      </div>
-                  </Card>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -282,7 +436,7 @@ export default function SettingsPage() {
           <section>
             <div className="mb-4">
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-semibold text-neutral-900">Mechanisms</h2>
+                <h2 className="text-[20px] font-bold text-neutral-900">Mechanisms</h2>
                 <button
                   onClick={() => router.push('/mechanisms/new')}
                   className="flex items-center justify-center w-6 h-6 rounded-full border border-neutral-300 hover:border-neutral-900 transition-colors"
@@ -331,7 +485,7 @@ export default function SettingsPage() {
         onClose={() => {
           setIsEditorModalOpen(false)
           setEditingEditor(null)
-          setEditorFormData({ name: '' })
+          setEditorFormData({ name: '', notes: '' })
         }}
         title={editingEditor ? 'Edit Editor' : 'Add Editor'}
       >
@@ -342,13 +496,20 @@ export default function SettingsPage() {
             onChange={(e) => setEditorFormData({ ...editorFormData, name: e.target.value })}
             placeholder="Enter editor name"
           />
+          <Textarea
+            label="Notes"
+            rows={6}
+            value={editorFormData.notes}
+            onChange={(e) => setEditorFormData({ ...editorFormData, notes: e.target.value })}
+            placeholder="Add notes about this editor..."
+          />
           <div className="flex gap-3 justify-end pt-4">
             <Button
               variant="ghost"
               onClick={() => {
                 setIsEditorModalOpen(false)
                 setEditingEditor(null)
-                setEditorFormData({ name: '' })
+                setEditorFormData({ name: '', notes: '' })
               }}
             >
               Cancel

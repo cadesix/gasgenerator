@@ -9,22 +9,22 @@ interface Editor {
   name: string
 }
 
-interface BriefDetailActionsProps {
-  briefId: string
+interface ScriptDetailActionsProps {
+  scriptId: string
   currentEditorId: string | null
   currentEditor: { id: string; name: string } | null
-  currentStatus: string
+  currentStatus: string | null
 }
 
-export function BriefDetailActions({
-  briefId,
+export function ScriptDetailActions({
+  scriptId,
   currentEditorId,
   currentEditor,
   currentStatus
-}: BriefDetailActionsProps) {
+}: ScriptDetailActionsProps) {
   const router = useRouter()
   const [editors, setEditors] = useState<Editor[]>([])
-  const [status, setStatus] = useState(currentStatus)
+  const [status, setStatus] = useState(currentStatus || 'assigned')
   const [isUpdating, setIsUpdating] = useState(false)
 
   useEffect(() => {
@@ -46,24 +46,24 @@ export function BriefDetailActions({
     setIsUpdating(true)
 
     try {
-      const response = await fetch(`/api/briefs/${briefId}`, {
+      const response = await fetch(`/api/scripts/${scriptId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ [field]: value }),
       })
 
-      if (!response.ok) throw new Error('Failed to update brief')
+      if (!response.ok) throw new Error('Failed to update script')
 
       router.refresh()
     } catch (error) {
-      console.error('Error updating brief:', error)
-      alert('Failed to update brief. Please try again.')
+      console.error('Error updating script:', error)
+      alert('Failed to update script. Please try again.')
     } finally {
       setIsUpdating(false)
     }
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string | null) => {
     switch (status) {
       case 'assigned':
         return 'bg-neutral-400'
@@ -76,10 +76,10 @@ export function BriefDetailActions({
     }
   }
 
-  const copyBriefLink = () => {
-    const url = `${window.location.origin}/briefs/${briefId}`
+  const copyScriptLink = () => {
+    const url = `${window.location.origin}/scripts/${scriptId}`
     navigator.clipboard.writeText(url)
-    alert('Brief link copied to clipboard!')
+    alert('Script link copied to clipboard!')
   }
 
   return (
@@ -115,9 +115,9 @@ export function BriefDetailActions({
 
       {/* Copy Link Button */}
       <button
-        onClick={copyBriefLink}
+        onClick={copyScriptLink}
         className="text-neutral-500 hover:text-neutral-900"
-        title="Copy brief link"
+        title="Copy script link"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />

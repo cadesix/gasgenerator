@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db/prisma'
 import { FormatForm } from '@/components/formats/FormatForm'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 export default async function NewFormatPage() {
   const projects = await prisma.project.findMany({
@@ -9,15 +10,8 @@ export default async function NewFormatPage() {
   })
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900">Create Format</h1>
-        <p className="mt-2 text-neutral-600">
-          Define a new script format template
-        </p>
-      </div>
-
+    <PageContainer title="Create Format">
       <FormatForm projects={projects} />
-    </div>
+    </PageContainer>
   )
 }

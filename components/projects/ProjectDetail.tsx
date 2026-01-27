@@ -141,7 +141,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
-                  className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                  className="block w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-2xl"
                 />
               </div>
               <div>
@@ -152,7 +152,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
                   type="text"
                   value={targetAudience}
                   onChange={(e) => setTargetAudience(e.target.value)}
-                  className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm"
+                  className="block w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-lg"
                 />
               </div>
               <div className="flex gap-3 justify-end">
@@ -202,7 +202,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
               onChange={(e) => setNewExample(e.target.value)}
               placeholder="Add a new example script..."
               rows={3}
-              className="block w-full px-3 py-2 border border-neutral-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-sm mb-3"
+              className="block w-full px-3 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none text-sm rounded-2xl mb-3"
             />
             <Button
               onClick={handleAddExample}

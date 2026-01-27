@@ -7,13 +7,22 @@ import { CopyButton } from '@/components/scripts/CopyButton'
 interface EditableScriptContentProps {
   scriptId: string
   initialContent: Record<string, string>
+  externalEditMode?: boolean
+  onEditModeChange?: (isEditing: boolean) => void
 }
 
-export function EditableScriptContent({ scriptId, initialContent }: EditableScriptContentProps) {
+export function EditableScriptContent({
+  scriptId,
+  initialContent,
+  externalEditMode,
+  onEditModeChange
+}: EditableScriptContentProps) {
   const router = useRouter()
   const [content, setContent] = useState(initialContent)
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+
+  const actualIsEditing = externalEditMode !== undefined ? externalEditMode : isEditing
 
   const sections = Object.keys(content)
   const fullScriptText = sections.map((section) => content[section]).join('\n\n')
@@ -30,7 +39,11 @@ export function EditableScriptContent({ scriptId, initialContent }: EditableScri
 
       if (!response.ok) throw new Error('Failed to update script')
 
-      setIsEditing(false)
+      if (onEditModeChange) {
+        onEditModeChange(false)
+      } else {
+        setIsEditing(false)
+      }
       router.refresh()
     } catch (error) {
       console.error('Error updating script:', error)
@@ -42,43 +55,42 @@ export function EditableScriptContent({ scriptId, initialContent }: EditableScri
 
   const handleCancel = () => {
     setContent(initialContent)
-    setIsEditing(false)
+    if (onEditModeChange) {
+      onEditModeChange(false)
+    } else {
+      setIsEditing(false)
+    }
   }
 
   const handleEdit = () => {
-    setIsEditing(true)
+    if (onEditModeChange) {
+      onEditModeChange(true)
+    } else {
+      setIsEditing(true)
+    }
   }
 
   return (
     <>
-      {/* Edit/Save/Cancel buttons at top */}
-      <div className="flex items-center justify-end gap-2 mb-6">
-        {isEditing ? (
-          <>
-            <button
-              onClick={handleCancel}
-              className="text-sm text-neutral-600 hover:text-neutral-900"
-              disabled={isSaving}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              className="px-4 py-2 text-sm bg-neutral-900 text-white hover:bg-neutral-800 rounded"
-              disabled={isSaving}
-            >
-              {isSaving ? 'Saving...' : 'Save'}
-            </button>
-          </>
-        ) : (
+      {/* Edit/Save/Cancel buttons at top (only show if not using external control) */}
+      {actualIsEditing && (
+        <div className="flex items-center justify-end gap-2 mb-6">
           <button
-            onClick={handleEdit}
+            onClick={handleCancel}
             className="text-sm text-neutral-600 hover:text-neutral-900"
+            disabled={isSaving}
           >
-            Edit
+            Cancel
           </button>
-        )}
-      </div>
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 text-sm bg-neutral-900 text-white hover:bg-neutral-800 rounded"
+            disabled={isSaving}
+          >
+            {isSaving ? 'Saving...' : 'Save'}
+          </button>
+        </div>
+      )}
 
       {/* Script sections */}
       <div className="space-y-6">
@@ -87,11 +99,11 @@ export function EditableScriptContent({ scriptId, initialContent }: EditableScri
             <h2 className="text-lg font-semibold text-neutral-900 uppercase mb-3">
               {section}
             </h2>
-            {isEditing ? (
+            {actualIsEditing ? (
               <textarea
                 value={content[section]}
                 onChange={(e) => setContent({ ...content, [section]: e.target.value })}
-                className="w-full min-h-[200px] px-4 py-3 text-neutral-900 border border-neutral-300 rounded focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 whitespace-pre-wrap font-mono text-sm"
+                className="w-full min-h-[200px] px-4 py-3 text-neutral-900 bg-white border border-neutral-300 rounded-2xl focus:outline-none whitespace-pre-wrap font-mono text-sm"
                 disabled={isSaving}
               />
             ) : (

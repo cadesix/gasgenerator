@@ -28,7 +28,7 @@ export function Input({
       )}
       <input
         id={inputId}
-        className={`block w-full px-3 py-2 border bg-white text-neutral-900 focus:outline-none sm:text-sm rounded-2xl ${
+        className={`block w-full px-3 py-2 border bg-white text-neutral-900 focus:outline-none sm:text-sm rounded-lg ${
           error
             ? 'border-neutral-900'
             : 'border-neutral-300'

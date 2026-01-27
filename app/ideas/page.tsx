@@ -20,7 +20,7 @@ export default async function IdeasPage() {
   ])
 
   return (
-    <PageContainer>
+    <PageContainer showBackButton={false}>
       <div className="mb-8">
         <h1 className="text-[20px] font-bold text-neutral-900">Ideas</h1>
       </div>

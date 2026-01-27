@@ -80,7 +80,7 @@ export function IdeaForm({ projects }: IdeaFormProps) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Add an idea..."
-          className="flex-1 px-4 py-2 border border-neutral-300 focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900"
+          className="flex-1 px-4 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none rounded-lg"
           required
         />
         <Button type="submit" isLoading={isSubmitting}>

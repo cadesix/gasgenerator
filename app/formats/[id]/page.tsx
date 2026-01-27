@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/db/prisma'
-import { FormatDetail } from '@/components/formats/FormatDetail'
+import { FormatDetailContent } from '@/components/formats/FormatDetailContent'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -26,15 +26,5 @@ export default async function FormatDetailPage({ params }: PageProps) {
     orderBy: { name: 'asc' },
   })
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900">
-          {format.name}
-        </h1>
-      </div>
-
-      <FormatDetail format={format} projects={projects} />
-    </div>
-  )
+  return <FormatDetailContent format={format} projects={projects} />
 }
