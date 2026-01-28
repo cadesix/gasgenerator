@@ -2,19 +2,31 @@ import { prisma } from '@/lib/db/prisma'
 import { Card } from '@/components/ui/Card'
 import Link from 'next/link'
 import { PageContainer } from '@/components/layout/PageContainer'
-import { EditorCard } from '@/components/editors/EditorCard'
+import { EditorsTables } from '@/components/editors/EditorsTables'
 
 export default async function EditorsPage() {
   const editors = await prisma.editor.findMany({
     where: { deletedAt: null },
+    orderBy: { name: 'asc' },
+  })
+
+  const scripts = await prisma.savedScript.findMany({
+    where: { deletedAt: null },
     include: {
-      _count: {
+      project: {
         select: {
-          scripts: true,
+          name: true,
+          icon: true,
+        },
+      },
+      editor: {
+        select: {
+          id: true,
+          name: true,
         },
       },
     },
-    orderBy: { name: 'asc' },
+    orderBy: { sortOrder: 'asc' },
   })
 
   return (
@@ -40,11 +52,7 @@ export default async function EditorsPage() {
           </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {editors.map((editor) => (
-            <EditorCard key={editor.id} editor={editor} />
-          ))}
-        </div>
+        <EditorsTables scripts={scripts} editors={editors} />
       )}
     </PageContainer>
   )

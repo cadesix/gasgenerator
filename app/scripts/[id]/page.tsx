@@ -12,7 +12,16 @@ export default async function ScriptDetailPage({
       id: (await params).id,
       deletedAt: null
     },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      savedAt: true,
+      editorId: true,
+      status: true,
+      notes: true,
+      videoLink: true,
+      generationPrompt: true,
       project: {
         select: {
           name: true,

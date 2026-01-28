@@ -78,9 +78,13 @@ model SavedScript {
 
   // Workflow fields (formerly in Brief)
   editorId    String?
-  status      String?  // assigned, in_progress, completed
+  status      String   @default("unassigned") // unassigned, assigned, in_progress, completed
   notes       String?
   videoLink   String?
+  sortOrder   Int      @default(0)
+
+  // Generation context
+  generationPrompt String?
 
   // Future: add tags, ratings, etc
   metadata    String?  @default("{}")
@@ -134,6 +138,7 @@ model Idea {
   projectId          String?
   convertedToScriptId String?
 
+  images             String   @default("[]") // JSON array of file paths
   metadata           String?  @default("{}")
 
   createdAt          DateTime @default(now())
@@ -144,4 +149,17 @@ model Idea {
 
   @@index([projectId])
   @@index([type])
+}
+
+model PromptHistory {
+  id          String   @id @default(uuid())
+  prompt      String   @unique
+  projectId   String?
+  formatId    String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([updatedAt])
+  @@index([projectId])
 }

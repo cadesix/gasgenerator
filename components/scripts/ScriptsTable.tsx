@@ -10,7 +10,7 @@ interface ScriptsTableProps {
     title: string
     content: string
     savedAt: Date
-    status: string | null
+    status: string
     editorId: string | null
     project: {
       name: string
@@ -164,7 +164,7 @@ export function ScriptsTable({ scripts }: ScriptsTableProps) {
 
                       {/* Editor Column */}
                       <div className="w-48 flex justify-end" onClick={(e) => e.stopPropagation()}>
-                        {script.status && script.editor ? (
+                        {script.status !== 'unassigned' && script.editor ? (
                           <div className="flex items-center gap-2 px-3 py-1 bg-neutral-100 rounded-full w-[118px]">
                             <div className={`w-1.5 h-1.5 rounded-full ${getStatusColor(script.status)}`} />
                             <span className="text-xs text-neutral-700 truncate">{script.editor.name}</span>

@@ -84,16 +84,16 @@ export default async function ScriptsPage({ searchParams }: PageProps) {
         </Card>
       ) : (
         <div className="space-y-8">
-          {scripts.filter(s => !s.status).length > 0 && (
+          {scripts.filter(s => s.status === 'unassigned').length > 0 && (
             <div>
               <h2 className="text-sm font-semibold text-neutral-900 mb-3">Unassigned</h2>
-              <ScriptsTable scripts={scripts.filter(s => !s.status)} />
+              <ScriptsTable scripts={scripts.filter(s => s.status === 'unassigned')} />
             </div>
           )}
-          {scripts.filter(s => s.status).length > 0 && (
+          {scripts.filter(s => s.status !== 'unassigned').length > 0 && (
             <div>
               <h2 className="text-sm font-semibold text-neutral-900 mb-3">Assigned</h2>
-              <ScriptsTable scripts={scripts.filter(s => s.status)} />
+              <ScriptsTable scripts={scripts.filter(s => s.status !== 'unassigned')} />
             </div>
           )}
         </div>

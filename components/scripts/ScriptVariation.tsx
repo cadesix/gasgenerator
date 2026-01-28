@@ -81,6 +81,7 @@ export function ScriptVariation({
           content: JSON.stringify(content),
           projectId,
           formatId,
+          generationPrompt: batchInstructions || null,
         }),
       })
 

@@ -4,7 +4,7 @@ import { prisma } from '@/lib/db/prisma'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { title, content, projectId, formatId } = body
+    const { title, content, projectId, formatId, generationPrompt } = body
 
     const script = await prisma.savedScript.create({
       data: {
@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
         content,
         projectId,
         formatId: formatId || null,
+        generationPrompt: generationPrompt || null,
       },
     })
 

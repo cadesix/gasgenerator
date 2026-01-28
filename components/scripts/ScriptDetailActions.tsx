@@ -13,7 +13,7 @@ interface ScriptDetailActionsProps {
   scriptId: string
   currentEditorId: string | null
   currentEditor: { id: string; name: string } | null
-  currentStatus: string | null
+  currentStatus: string
 }
 
 export function ScriptDetailActions({
@@ -63,8 +63,10 @@ export function ScriptDetailActions({
     }
   }
 
-  const getStatusColor = (status: string | null) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
+      case 'unassigned':
+        return 'bg-neutral-400'
       case 'assigned':
         return 'bg-neutral-400'
       case 'in_progress':

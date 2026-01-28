@@ -33,6 +33,19 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Log prompt history (dedupe by prompt text)
+    if (repromptContext && repromptContext.trim()) {
+      await prisma.promptHistory.upsert({
+        where: { prompt: repromptContext.trim() },
+        update: { updatedAt: new Date() },
+        create: {
+          prompt: repromptContext.trim(),
+          projectId,
+          formatId,
+        },
+      })
+    }
+
     // Reprompt script using Claude
     const content = await repromptScript({
       project,

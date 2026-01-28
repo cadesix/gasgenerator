@@ -45,6 +45,19 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Log prompt history (dedupe by prompt text)
+    if (batchInstructions && batchInstructions.trim()) {
+      await prisma.promptHistory.upsert({
+        where: { prompt: batchInstructions.trim() },
+        update: { updatedAt: new Date() },
+        create: {
+          prompt: batchInstructions.trim(),
+          projectId,
+          formatId,
+        },
+      })
+    }
+
     // Generate scripts using Claude
     const scripts = await generateScripts({
       project,

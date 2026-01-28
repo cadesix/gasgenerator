@@ -18,9 +18,10 @@ interface ScriptDetailContentProps {
     content: string
     savedAt: Date
     editorId: string | null
-    status: string | null
+    status: string
     notes: string | null
     videoLink: string | null
+    generationPrompt: string | null
     project: {
       name: string
     }
@@ -40,6 +41,7 @@ interface ScriptDetailContentProps {
 
 export function ScriptDetailContent({ script }: ScriptDetailContentProps) {
   const [isEditing, setIsEditing] = useState(false)
+  const [isPromptExpanded, setIsPromptExpanded] = useState(false)
   const content = JSON.parse(script.content) as Record<string, string>
   const sections = Object.keys(content)
 
@@ -68,7 +70,7 @@ export function ScriptDetailContent({ script }: ScriptDetailContentProps) {
         />
       }
       actions={
-        script.status ? (
+        script.status !== 'unassigned' ? (
           <ScriptDetailActions
             scriptId={script.id}
             currentEditorId={script.editorId}
@@ -143,12 +145,12 @@ export function ScriptDetailContent({ script }: ScriptDetailContentProps) {
       )}
 
       {/* Notes - only show if script is assigned */}
-      {script.status && (
+      {script.status !== 'unassigned' && (
         <ScriptNotes scriptId={script.id} initialNotes={script.notes} />
       )}
 
       {/* Video Link - only show if script is assigned */}
-      {script.status && (
+      {script.status !== 'unassigned' && (
         <ScriptVideoLink scriptId={script.id} initialVideoLink={script.videoLink} />
       )}
 
@@ -172,6 +174,37 @@ export function ScriptDetailContent({ script }: ScriptDetailContentProps) {
               </p>
             </div>
           </div>
+        </Card>
+      )}
+
+      {/* Generation Prompt */}
+      {script.generationPrompt && (
+        <Card>
+          <button
+            onClick={() => setIsPromptExpanded(!isPromptExpanded)}
+            className="w-full flex items-center justify-between text-left"
+          >
+            <h3 className="text-base font-medium text-neutral-700">
+              Generation Prompt
+            </h3>
+            <svg
+              className={`w-4 h-4 text-neutral-400 transition-transform ${
+                isPromptExpanded ? 'rotate-180' : ''
+              }`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {isPromptExpanded && (
+            <div className="mt-3 pt-3 border-t border-neutral-200">
+              <p className="text-sm text-neutral-900 whitespace-pre-wrap">
+                {script.generationPrompt}
+              </p>
+            </div>
+          )}
         </Card>
       )}
     </DetailPageLayout>

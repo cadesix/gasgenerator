@@ -22,6 +22,8 @@ export function IdeaList({ ideas }: IdeaListProps) {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [ideaToDelete, setIdeaToDelete] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [imageModalOpen, setImageModalOpen] = useState(false)
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   const handleDelete = async () => {
     if (!ideaToDelete) return
@@ -58,7 +60,10 @@ export function IdeaList({ ideas }: IdeaListProps) {
 
   return (
     <div className="space-y-3">
-      {ideas.map((idea) => (
+      {ideas.map((idea) => {
+        const images = idea.images ? JSON.parse(idea.images) : []
+
+        return (
         <div key={idea.id} className="group">
           <Card padding="sm" className="transition-transform duration-200 ease-out group-hover:scale-[1.02] origin-center">
             <div className="transition-transform duration-200 ease-out group-hover:scale-[0.9804] origin-center">
@@ -67,6 +72,25 @@ export function IdeaList({ ideas }: IdeaListProps) {
               <p className="text-neutral-900 whitespace-pre-wrap mb-2">
                 {idea.content}
               </p>
+
+              {images.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {images.map((imagePath: string, index: number) => (
+                    <img
+                      key={index}
+                      src={imagePath}
+                      alt={`Idea image ${index + 1}`}
+                      className="w-24 h-24 object-cover rounded border border-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedImage(imagePath)
+                        setImageModalOpen(true)
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+
               <div className="flex items-center gap-2">
                 {idea.project && (
                   <Badge variant="default">{idea.project.name}</Badge>
@@ -103,7 +127,8 @@ export function IdeaList({ ideas }: IdeaListProps) {
           </div>
           </Card>
         </div>
-      ))}
+        )
+      })}
 
       <Modal
         isOpen={deleteModalOpen}
@@ -130,6 +155,24 @@ export function IdeaList({ ideas }: IdeaListProps) {
             Delete Idea
           </Button>
         </div>
+      </Modal>
+
+      <Modal
+        isOpen={imageModalOpen}
+        onClose={() => {
+          setImageModalOpen(false)
+          setSelectedImage(null)
+        }}
+        title="Image"
+        maxWidth="xl"
+      >
+        {selectedImage && (
+          <img
+            src={selectedImage}
+            alt="Full size"
+            className="w-full h-auto"
+          />
+        )}
       </Modal>
     </div>
   )

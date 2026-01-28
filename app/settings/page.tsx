@@ -44,6 +44,12 @@ interface Mechanism {
   content: string
 }
 
+interface PromptHistoryItem {
+  id: string
+  prompt: string
+  updatedAt: string
+}
+
 export default function SettingsPage() {
   const router = useRouter()
 
@@ -61,6 +67,10 @@ export default function SettingsPage() {
 
   // Mechanisms state
   const [mechanisms, setMechanisms] = useState<Mechanism[]>([])
+
+  // Prompt history state
+  const [prompts, setPrompts] = useState<PromptHistoryItem[]>([])
+  const [promptsExpanded, setPromptsExpanded] = useState(false)
 
   // Formats expansion state
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set())
@@ -92,6 +102,25 @@ export default function SettingsPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const fetchPrompts = async () => {
+    try {
+      const response = await fetch('/api/prompts?limit=50')
+      if (response.ok) {
+        const data = await response.json()
+        setPrompts(data.prompts)
+      }
+    } catch (error) {
+      console.error('Error fetching prompts:', error)
+    }
+  }
+
+  const handleTogglePrompts = () => {
+    if (!promptsExpanded && prompts.length === 0) {
+      fetchPrompts()
+    }
+    setPromptsExpanded(!promptsExpanded)
   }
 
   // Editor handlers
@@ -474,6 +503,68 @@ export default function SettingsPage() {
                   </Card>
                 </div>
               ))}
+            </div>
+          </section>
+
+          {/* Prompt History Section */}
+          <section>
+            <div className="mb-4">
+              <h2 className="text-[20px] font-bold text-neutral-900">Prompt History</h2>
+              <p className="text-sm text-neutral-600 mt-1">View your recent prompts used for script generation</p>
+            </div>
+
+            <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden">
+              <div
+                onClick={handleTogglePrompts}
+                className="cursor-pointer px-6 py-4 hover:bg-neutral-50 transition-colors"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 flex-1">
+                    <svg
+                      className={`w-4 h-4 text-neutral-400 transition-transform ${
+                        promptsExpanded ? 'rotate-90' : ''
+                      }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    <div>
+                      <h3 className="text-base font-semibold text-neutral-900">View All Prompts</h3>
+                      {prompts.length > 0 && (
+                        <p className="text-sm text-neutral-500 mt-0.5">
+                          {prompts.length} prompt{prompts.length !== 1 ? 's' : ''}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {promptsExpanded && (
+                <div className="border-t border-neutral-200">
+                  {prompts.length === 0 ? (
+                    <div className="px-6 py-8 text-center text-neutral-500">
+                      No prompts yet
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-neutral-100 max-h-96 overflow-y-auto">
+                      {prompts.map((prompt) => (
+                        <div
+                          key={prompt.id}
+                          className="px-6 py-4 hover:bg-neutral-50 transition-colors"
+                        >
+                          <p className="text-sm text-neutral-900 whitespace-pre-wrap mb-2">{prompt.prompt}</p>
+                          <p className="text-xs text-neutral-400">
+                            Last used: {new Date(prompt.updatedAt).toLocaleDateString()} at {new Date(prompt.updatedAt).toLocaleTimeString()}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </section>
         </div>
