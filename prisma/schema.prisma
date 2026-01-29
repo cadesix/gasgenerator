@@ -28,6 +28,7 @@ model Project {
   formats         ScriptFormat[]
   savedScripts    SavedScript[]
   ideas           Idea[]
+  statics         Static[]
 }
 
 model ScriptFormat {
@@ -162,4 +163,22 @@ model PromptHistory {
 
   @@index([updatedAt])
   @@index([projectId])
+}
+
+model Static {
+  id              String   @id @default(uuid())
+  title           String
+  projectId       String
+  prompt          String?
+  referenceImages String   @default("[]") // JSON array of file paths
+  generatedImage  String?  // Path to generated image
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([createdAt])
 }

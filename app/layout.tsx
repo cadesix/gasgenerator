@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: 'GAS Station',
   description: 'GAS PUMP',
   icons: {
-    icon: '/favicon.png',
+    icon: '/images/favicon.png',
   },
 }
 
