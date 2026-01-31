@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db/prisma'
 import { Card } from '@/components/ui/Card'
 import { ScriptsTable } from '@/components/scripts/ScriptsTable'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { ScriptsPageHeader } from '@/components/scripts/ScriptsPageHeader'
 
 interface PageProps {
   searchParams: Promise<{ project?: string }>
@@ -24,18 +25,25 @@ export default async function ScriptsPage({ searchParams }: PageProps) {
     orderBy: { savedAt: 'desc' },
   })
 
-  const projects = await prisma.project.findMany({
-    where: { deletedAt: null },
-    select: { id: true, name: true },
-    orderBy: { name: 'asc' },
-  })
+  const [projectsData, formats] = await Promise.all([
+    prisma.project.findMany({
+      where: { deletedAt: null },
+      select: { id: true, name: true, icon: true },
+      orderBy: { name: 'asc' },
+    }),
+    prisma.scriptFormat.findMany({
+      where: { deletedAt: null },
+      select: { id: true, name: true, sections: true, isGlobal: true, projectId: true },
+      orderBy: [{ isGlobal: 'desc' }, { name: 'asc' }],
+    }),
+  ])
+
+  const projects = projectsData
 
   return (
     <PageContainer showBackButton={false}>
       <div className="mb-8 flex items-center gap-4 flex-wrap">
-        <h1 className="text-[20px] font-bold text-neutral-900">
-          Scripts
-        </h1>
+        <ScriptsPageHeader projects={projects} formats={formats} />
         {projects.length > 0 && (
           <>
           <Link href="/scripts">

@@ -46,7 +46,10 @@ export function StaticGenerator({ projects, onGenerated }: StaticGeneratorProps)
         body: formData,
       })
 
-      if (!response.ok) throw new Error('Failed to generate static')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to generate static')
+      }
 
       const data = await response.json()
       onGenerated({
@@ -55,9 +58,9 @@ export function StaticGenerator({ projects, onGenerated }: StaticGeneratorProps)
         prompt,
         projectId: selectedProjectId,
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating static:', error)
-      alert('Failed to generate static. Please try again.')
+      alert(error.message || 'Failed to generate static. Please try again.')
     } finally {
       setIsGenerating(false)
     }
@@ -91,6 +94,24 @@ export function StaticGenerator({ projects, onGenerated }: StaticGeneratorProps)
     )
     if (files.length > 0) {
       setReferenceImages((prev) => [...prev, ...files])
+    }
+  }
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = Array.from(e.clipboardData.items)
+    const imageFiles: File[] = []
+
+    items.forEach((item) => {
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile()
+        if (file) {
+          imageFiles.push(file)
+        }
+      }
+    })
+
+    if (imageFiles.length > 0) {
+      setReferenceImages((prev) => [...prev, ...imageFiles])
     }
   }
 
@@ -146,6 +167,7 @@ export function StaticGenerator({ projects, onGenerated }: StaticGeneratorProps)
         placeholder="Describe the static ad you want to create..."
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
+        onPaste={handlePaste}
         rows={6}
         className="block w-full px-4 py-3 border border-neutral-300 rounded-2xl focus:outline-none text-sm resize-none placeholder:text-[#A3A3A3]"
       />

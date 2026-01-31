@@ -59,11 +59,22 @@ export async function POST(request: NextRequest) {
       generatedImage: generatedImagePath,
       referencePaths,
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating static:', error)
+
+    // Check for specific API errors
+    let errorMessage = 'Failed to generate static'
+    if (error?.message?.includes('overloaded')) {
+      errorMessage = 'The AI model is currently overloaded. Please try again in a few moments.'
+    } else if (error?.message?.includes('quota')) {
+      errorMessage = 'API quota exceeded. Please check your API key limits.'
+    } else if (error?.message) {
+      errorMessage = error.message
+    }
+
     return NextResponse.json(
-      { error: 'Failed to generate static' },
-      { status: 500 }
+      { error: errorMessage },
+      { status: error?.status || 500 }
     )
   }
 }

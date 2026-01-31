@@ -84,6 +84,24 @@ export function IdeaForm({ projects }: IdeaFormProps) {
     }
   }
 
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = Array.from(e.clipboardData.items)
+    const imageFiles: File[] = []
+
+    items.forEach((item) => {
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile()
+        if (file) {
+          imageFiles.push(file)
+        }
+      }
+    })
+
+    if (imageFiles.length > 0) {
+      setSelectedImages((prev) => [...prev, ...imageFiles])
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
@@ -133,6 +151,7 @@ export function IdeaForm({ projects }: IdeaFormProps) {
             type="text"
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            onPaste={handlePaste}
             placeholder="Add an idea..."
             className="flex-1 px-4 py-2 border border-neutral-300 bg-white text-neutral-900 focus:outline-none rounded-lg"
             required
